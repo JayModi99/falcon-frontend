@@ -1,0 +1,57 @@
+<div id="forgot-password" fxLayout="column">
+
+    <div id="forgot-password-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="forgot-password-form">
+
+            <div class="logo">
+                <img src="assets/images/logos/fuse.svg">
+            </div>
+
+            <div class="title" color="accent">LOGIN</div>
+
+            <form [formGroup]="loginForm">
+                
+                <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email" required>
+                    <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                    <mat-error *ngIf="loginForm.get('email').hasError('required')">
+                        Email is required
+                    </mat-error>
+                    <mat-error *ngIf="loginForm.get('email').hasError('pattern')">
+                        Please enter a valid email address
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input *ngIf="!showPassword" type="password" matInput formControlName="password" required>
+                    <input *ngIf="showPassword" matInput formControlName="password" required>
+                    <mat-icon *ngIf="!showPassword" (click)="changePasswordVisibility(true)" style="cursor: pointer;" matSuffix class="secondary-text">visibility_off</mat-icon>
+                    <mat-icon *ngIf="showPassword" (click)="changePasswordVisibility(false)" style="cursor: pointer;" matSuffix class="secondary-text">visibility</mat-icon>
+                    <mat-error *ngIf="loginForm.get('password').hasError('required')">
+                        Password is required
+                    </mat-error>
+                </mat-form-field>
+
+                <button (click)="login()" mat-raised-button class="submit-button" color="accent" [disabled]="loginForm.invalid">
+                    Login
+                </button>
+            </form>
+
+            <div class="login" fxLayout="row" fxLayoutAlign="center center">
+                Already Registered?&nbsp;&nbsp;<a class="link" [routerLink]="'/register'">Register</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="overlay" *ngIf="loading">
+    <div class="spinner">
+      <mat-spinner color="accent"></mat-spinner>
+    </div>
+  </div>
