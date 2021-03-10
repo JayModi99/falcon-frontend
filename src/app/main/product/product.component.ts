@@ -66,7 +66,7 @@ export class ProductComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe(result => {
             this.productCategory = null;
-            this.getProductCategory();
+            //this.getProductCategory();
         });
     }
 
