@@ -1,0 +1,37 @@
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Problem</th>
+            <th>Details</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngIf="dataLoading">
+            <td colspan="7" style="text-align: center; padding: 15px 0px;">Loading...</td>
+        </tr>
+        <tr *ngIf="failed">
+            <td colspan="7" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+        </tr>
+        <tr *ngIf="tickets == '' && !dataLoading && !failed">
+            <td colspan="7" style="text-align: center; padding: 15px 0px;">No records found</td>
+        </tr>
+        <tr *ngFor="let ticket of tickets; let i = index">
+            <td>{{ i+1 }}</td>
+            <td>{{ ticket.product_category }} - {{ ticket.name }}</td>
+            <td>{{ ticket.problem_name }}</td>
+            <td>{{ ticket.details }}</td>
+            <td><button (click)="openTicketAddDialog('Edit', ticket.id, ticket, clientId)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
+            <td><button (click)="deleteTicket(ticket.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="overlay" *ngIf="loading || dataLoading">
+    <div class="spinner">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+</div>

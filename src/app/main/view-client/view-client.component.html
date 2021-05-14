@@ -1,0 +1,54 @@
+<div id="profile" class="page-layout simple tabbed">
+
+    <!-- HEADER -->
+    <div class="header p-24" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+         fxLayoutAlign.gt-sm="space-between end">
+        <div class="user-info" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+             fxLayoutAlign.gt-sm="start center">
+             <button [routerLink]="'/clients'" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>arrow_back</mat-icon></button>
+            <div class="name" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                {{ client?.organisation_name }}
+            </div>
+            <div *ngIf="!client?.organisation_name" class="name" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                Loading...
+            </div>
+        </div>
+
+        <div class="actions" fxLayout="row" fxLayoutAlign="end center" [@animate]="{value:'*',params:{delay:'200ms'}}">
+            <button (click)="openClientProductAddDialog('Add', 0, '', clientId)" mat-raised-button color="accent" aria-label="Follow">Add Product</button>
+            <button (click)="openClientAddDialog()" mat-raised-button color="" aria-label="Follow">Edit Client</button>
+            <button (click)="openTicketAddDialog('Generate', 0, '', clientId)" mat-raised-button color="warn" aria-label="Send Message">New Complaint</button>
+        </div>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group dynamicHeight="true">
+
+            <mat-tab label="Profile">
+                <client-profile [client]="client"></client-profile>
+            </mat-tab>
+
+            <mat-tab label="Products">
+                <client-products [clientId]="clientId"></client-products>
+            </mat-tab>
+
+            <mat-tab label="Tickets">
+                <client-tickets [clientId]="clientId"></client-tickets>
+            </mat-tab>
+
+        </mat-tab-group>        
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>
+
+<div class="overlay" *ngIf="loading">
+    <div class="spinner">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+</div>

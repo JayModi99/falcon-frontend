@@ -1,0 +1,270 @@
+<h2 mat-dialog-title>{{ data.type }} Client</h2>
+<mat-dialog-content class="mat-typography">
+    <mat-horizontal-stepper linear #stepper>
+
+        <mat-step [stepControl]="clientForm1" editable="true">
+            <form [formGroup]="clientForm1">
+                <ng-template matStepLabel>Organisation Details</ng-template>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Organisation Name</mat-label>
+                                <input matInput formControlName="organisation_name" required>
+                                <mat-icon matSuffix class="secondary-text">business</mat-icon>
+                                <mat-error *ngIf="clientForm1.get('organisation_name').hasError('required')">
+                                    Organisation Name is required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Industry Type</mat-label>
+                                <mat-select formControlName="industry_type" required>
+                                    <mat-option *ngIf="!industryTypes" disabled>Failed to Load</mat-option>
+                                    <mat-option *ngFor="let type of industryTypes" [value]="type.id">
+                                        {{type.industry_type_name}}
+                                    </mat-option>
+                                </mat-select>
+                                <!-- <mat-icon matSuffix class="secondary-text">list</mat-icon> -->
+                                <mat-error *ngIf="clientForm1.get('industry_type').hasError('required')">
+                                    Industry Type is required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Email</mat-label>
+                                <input matInput formControlName="email" required>
+                                <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                                <mat-error *ngIf="clientForm1.get('email').hasError('required')">
+                                    Email is required
+                                </mat-error>
+                                <mat-error *ngIf="clientForm1.get('email').hasError('pattern')">
+                                    Please enter a valid email address
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>GST Number</mat-label>
+                                <input matInput formControlName="gst_no">
+                                <mat-icon matSuffix class="secondary-text">business_center</mat-icon>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Password</mat-label>
+                                <input *ngIf="!showPassword" type="password" matInput formControlName="password" required>
+                                <input *ngIf="showPassword" matInput formControlName="password" required>
+                                <mat-icon *ngIf="!showPassword" (click)="changePasswordVisibility(true)" style="cursor: pointer;" matSuffix class="secondary-text">visibility_off</mat-icon>
+                                <mat-icon *ngIf="showPassword" (click)="changePasswordVisibility(false)" style="cursor: pointer;" matSuffix class="secondary-text">visibility</mat-icon>
+                                <mat-error *ngIf="clientForm1.get('password').hasError('required')">
+                                    Password is required
+                                </mat-error>
+                                <mat-error *ngIf="clientForm1.get('password').hasError('minlength')">
+                                    Password must be at least 6 characters
+                                  </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <!-- <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Confirm Password</mat-label>
+                                <input (input)="passwordChange()" *ngIf="!showConfirmPassword" type="password" matInput formControlName="confirm_password" required>
+                                <input (input)="passwordChange()" *ngIf="showConfirmPassword" matInput formControlName="confirm_password" required>
+                                <mat-icon *ngIf="!showConfirmPassword" (click)="changeConfirmPasswordVisibility(true)" style="cursor: pointer;" matSuffix class="secondary-text">visibility_off</mat-icon>
+                                <mat-icon *ngIf="showConfirmPassword" (click)="changeConfirmPasswordVisibility(false)" style="cursor: pointer;" matSuffix class="secondary-text">visibility</mat-icon>
+                            </mat-form-field>
+                            <label style="color: red; font-size: 12px; margin-left: 12px; float: left; margin-top: -20px;" *ngIf="!passwordMatch && !clientForm1.get('password').hasError('required')">
+                                Password didn't match.
+                            </label>
+                        </td> -->
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Area</mat-label>
+                                <mat-select formControlName="area_id" required>
+                                    <mat-option *ngIf="!areas" disabled>Failed to Load</mat-option>
+                                    <mat-option *ngFor="let a of areas" [value]="a.id">
+                                        {{a.name}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="clientForm1.get('area_id').hasError('required')">
+                                    Area is required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Phone Number</mat-label>
+                                <input matInput formControlName="landline">
+                                <mat-icon matSuffix class="secondary-text">call</mat-icon>
+                            </mat-form-field>
+                        </td>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Website</mat-label>
+                                <input matInput formControlName="website">
+                                <mat-icon matSuffix class="secondary-text">language</mat-icon>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button mat-flat-button color="accent" style="float: right;" matStepperNext [disabled]="clientForm1.invalid">Next</button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="clientForm2" editable="true">
+          <form [formGroup]="clientForm2">
+            <ng-template matStepLabel>Address</ng-template>
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>Address Line 1</mat-label>
+                            <input matInput formControlName="address_1" required>
+                            <mat-icon matSuffix class="secondary-text">home</mat-icon>
+                            <mat-error *ngIf="clientForm2.get('address_1').hasError('required')">
+                                Address is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>Address Line 2</mat-label>
+                            <input matInput formControlName="address_2">
+                            <mat-icon matSuffix class="secondary-text">home</mat-icon>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>City</mat-label>
+                            <input matInput formControlName="city" required>
+                            <mat-icon matSuffix class="secondary-text">location_city</mat-icon>
+                            <mat-error *ngIf="clientForm2.get('city').hasError('required')">
+                                City is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>Pincode</mat-label>
+                            <input matInput formControlName="pincode" required>
+                            <mat-icon matSuffix class="secondary-text">location_on</mat-icon>
+                            <mat-error *ngIf="clientForm2.get('pincode').hasError('required')">
+                                Pincode is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>State</mat-label>
+                            <input matInput formControlName="state" required>
+                            <mat-icon matSuffix class="secondary-text">account_balance</mat-icon>
+                            <mat-error *ngIf="clientForm2.get('state').hasError('required')">
+                                State is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td style="width: 50%; text-align: center; border: none;">
+                        <mat-form-field style="width: 95%;" appearance="">
+                            <mat-label>Country</mat-label>
+                            <input matInput formControlName="country" required>
+                            <mat-icon matSuffix class="secondary-text">flag</mat-icon>
+                            <mat-error *ngIf="clientForm2.get('country').hasError('required')">
+                                Country is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+            <div>
+              <button mat-stroked-button matStepperPrevious>Back</button>
+              <button mat-flat-button color="accent" style="float: right;" matStepperNext [disabled]="clientForm1.invalid || clientForm2.invalid">Next</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <mat-step [stepControl]="clientForm3">
+            <form [formGroup]="clientForm3">
+                <ng-template matStepLabel>Personal Details</ng-template>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Name 1</mat-label>
+                                <input matInput formControlName="name_1" required>
+                                <mat-icon matSuffix class="secondary-text">perm_indentity</mat-icon>
+                                <mat-error *ngIf="clientForm3.get('name_1').hasError('required')">
+                                    Name is required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Phone Number 1</mat-label>
+                                <input matInput formControlName="phone_1" required>
+                                <mat-icon matSuffix class="secondary-text">call</mat-icon>
+                                <mat-error *ngIf="clientForm3.get('phone_1').hasError('required')">
+                                    Phone Number is required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Name 2</mat-label>
+                                <input matInput formControlName="name_2">
+                                <mat-icon matSuffix class="secondary-text">perm_indentity</mat-icon>
+                            </mat-form-field>
+                        </td>
+                        <td style="width: 50%; text-align: center; border: none;">
+                            <mat-form-field style="width: 95%;" appearance="">
+                                <mat-label>Phone Number 2</mat-label>
+                                <input matInput formControlName="phone_2">
+                                <mat-icon matSuffix class="secondary-text">call</mat-icon>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button mat-stroked-button matStepperPrevious>Back</button>
+                </div>
+            </form>
+        </mat-step>
+
+      </mat-horizontal-stepper>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="0">Cancel</button>
+  <button (click)="onRegister()" [disabled]="clientForm1.invalid || clientForm2.invalid || clientForm3.invalid" mat-flat-button color="accent">{{ data.type }}</button>
+</mat-dialog-actions>
+<div class="overlay" *ngIf="loading">
+  <div class="spinner">
+    <mat-spinner color="accent"></mat-spinner>
+  </div>
+</div>

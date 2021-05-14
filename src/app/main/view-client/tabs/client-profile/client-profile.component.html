@@ -1,0 +1,186 @@
+<div id="about" class="p-24" fxLayout="row wrap">
+
+    <div class="about-content" fxLayout="column" fxFlex="100">
+
+        <div class="profile-box info-box general" fxLayout="column">
+
+            <header class="accent">
+                <div class="title">Organisation Details</div>
+            </header>
+
+            <div class="content">
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Industry Type</div>
+                                <div class="info">{{ client?.industry_type_name }}</div>
+                                <div *ngIf="!client?.industry_type" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Email</div>
+                                <div class="info">{{ client?.email }}</div>
+                                <div *ngIf="!client?.email" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Area</div>
+                                <div class="info">{{ client?.name }}</div>
+                                <div *ngIf="!client?.area_id" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Phone Number</div>
+                                <div class="info">{{ client?.landline }}</div>
+                                <div *ngIf="!client?.landline && client?.organisation_name" class="info">-</div>
+                                <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Website</div>
+                                <div class="info">{{ client?.website }}</div>
+                                <div *ngIf="!client?.website && client?.organisation_name" class="info">-</div>
+                                <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">GST No.</div>
+                                <div class="info">{{ client?.gst_no }}</div>
+                                <div *ngIf="!client?.gst_no && client?.organisation_name" class="info">-</div>
+                                <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="profile-box info-box work" fxLayout="column">
+
+            <header class="accent">
+                <div class="title">Address</div>
+            </header>
+
+            <div class="content">
+
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Address Line 1</div>
+                                <div class="info">{{ client?.address_1 }}</div>
+                                <div *ngIf="!client?.address_1" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Address Line 2</div>
+                                <div class="info">{{ client?.address_2 }}</div>
+                                <div *ngIf="!client?.address_2 && client?.organisation_name" class="info">-</div>
+                                <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">City</div>
+                                <div class="info">{{ client?.city }}</div>
+                                <div *ngIf="!client?.city" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Pincode</div>
+                                <div class="info">{{ client?.pincode }}</div>
+                                <div *ngIf="!client?.pincode" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">State</div>
+                                <div class="info">{{ client?.state }}</div>
+                                <div *ngIf="!client?.state" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Country</div>
+                                <div class="info">{{ client?.country }}</div>
+                                <div *ngIf="!client?.country" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="profile-box info-box contact" fxLayout="column">
+
+            <header class="accent">
+                <div class="title">Personal Details</div>
+            </header>
+
+            <div class="content">
+
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Name 1</div>
+                                <div class="info">{{ client?.name_1 }}</div>
+                                <div *ngIf="!client?.name_1" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Phone Number 1</div>
+                                <div class="info">
+                                    <span>{{ client?.phone_1 }}</span>
+                                    <div *ngIf="!client?.phone_1" class="info">Loading...</div><br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Name 2</div>
+                                <div class="info">{{ client?.name_2 }}</div>
+                                <div *ngIf="!client?.name_2 && client?.organisation_name" class="info">-</div>
+                                <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                            </div>
+                        </td>
+                        <td style="width: 50%; border: none;">
+                            <div class="info-line">
+                                <div class="title">Phone Number 2</div>
+                                <div class="info">
+                                    <span>{{ client?.phone_2 }}</span>
+                                    <div *ngIf="!client?.phone_2 && client?.organisation_name" class="info">-</div>
+                                    <div *ngIf="!client?.organisation_name" class="info">Loading...</div><br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
