@@ -36,6 +36,46 @@ export const navigation: FuseNavigation[] = [
                 type     : 'item',
                 icon     : 'inventory_2',
                 url      : '/product'
+            },
+            {
+                id       : 'area',
+                title    : 'Area',
+                translate: 'Area',
+                type     : 'item',
+                icon     : 'inventory_2',
+                url      : '/area'
+            },
+            {
+                id       : 'problem',
+                title    : 'Problem',
+                translate: 'Problem',
+                type     : 'item',
+                icon     : 'inventory_2',
+                url      : '/problem'
+            },
+            {
+                id       : 'engineer',
+                title    : 'Engineer',
+                translate: 'Engineer',
+                type     : 'item',
+                icon     : 'inventory_2',
+                url      : '/engineer'
+            },
+            {
+                id       : 'client',
+                title    : 'Client',
+                translate: 'Client',
+                type     : 'item',
+                icon     : 'inventory_2',
+                url      : '/client'
+            },
+            {
+                id       : 'complaint',
+                title    : 'Complaint',
+                translate: 'Complaint',
+                type     : 'item',
+                icon     : 'inventory_2',
+                url      : '/complaint'
             }
         ]
     }

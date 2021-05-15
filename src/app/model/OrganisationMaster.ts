@@ -1,6 +1,8 @@
 export class OrganisationMaster {
 
     id: number;
+    org_id: number;
+    area_id: number;
     organisation_name: string;
     industry_type: string;
     email: string;

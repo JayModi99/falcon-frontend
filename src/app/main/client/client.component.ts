@@ -46,6 +46,7 @@ export class ClientComponent implements OnInit {
         this.failed = false;
         this.falconService.getClient()
         .subscribe((result) => {
+            console.log(result);
             this.clients = result;
             this.dataLoading = false;
         },

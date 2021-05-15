@@ -45,6 +45,7 @@ export class ProductCategoryComponent implements OnInit {
         this.failed = false;
         this.falconService.getProductCategory()
         .subscribe((result) => {
+            console.log(result);
             this.productCategory = result;
             this.dataLoading = false;
         },

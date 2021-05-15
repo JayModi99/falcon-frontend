@@ -1,3 +1,7 @@
+import { ViewClientModule } from './main/view-client/view-client.module';
+import { EngineerModule } from './main/engineer/engineer.module';
+import { ComplaintModule } from './main/complaint/complaint.module';
+import { ClientModule } from './main/client/client.module';
 import { ProductModule } from './main/product/product.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ProductCategoryModule } from './main/product-category/product-category.module';
@@ -25,6 +29,8 @@ import { AppComponent } from 'app/app.component';
 import { LayoutModule } from 'app/layout/layout.module';
 import { SampleModule } from 'app/main/sample/sample.module';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { AreasModule } from './main/areas/areas.module';
+import { ProblemModule } from './main/problem/problem.module';
 
 const appRoutes: Routes = [
     {
@@ -64,7 +70,13 @@ const appRoutes: Routes = [
         RegisterModule,
         LoginModule,
         ProductCategoryModule,
-        ProductModule
+        ProductModule,
+        AreasModule,
+        ClientModule,
+        ComplaintModule,
+        EngineerModule,
+        ProblemModule,
+        ViewClientModule
     ],
     providers   : [
         AuthGuardService,
