@@ -4,7 +4,7 @@
 
         <mat-form-field style="width: 90%;" appearance="">
             <mat-label>Client</mat-label>
-            <mat-select formControlName="client_id" required>
+            <mat-select (selectionChange)="onClientChange($event)" formControlName="client_id" required>
                 <mat-option *ngIf="!problem" disabled>Failed to Load</mat-option>
                 <mat-option *ngFor="let c of clients" [value]="c.id">
                     {{c.organisation_name}}

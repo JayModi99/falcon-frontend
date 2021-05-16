@@ -8,8 +8,8 @@ import { Subject, Observable } from 'rxjs';
 })
 export class FalconService {
     
-    private url: string = "http://localhost:8000/api/";
-    //private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
+    //private url: string = "http://localhost:8000/api/";
+    private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
 
     userId = localStorage.getItem('userId');
 

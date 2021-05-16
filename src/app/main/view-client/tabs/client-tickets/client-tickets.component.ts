@@ -150,6 +150,12 @@ export class ClientTicketsComponent implements OnInit {
             client_product_id: [this.data.ticket.client_product_id, [Validators.required]],
             details: [this.data.ticket.details, [Validators.required]]
         });
+        if(this.data.client_id){
+            this.getClientProduct();
+        }
+        else{
+            this.ticketForm.get('client_product_id').disable();
+        }
     }
 
     getClients(){
@@ -158,7 +164,7 @@ export class ClientTicketsComponent implements OnInit {
         .subscribe((result) => {
             this.clients = result;
             this.loading = false;
-            this.getClientProduct();
+            // this.getClientProduct();
         },
         (error) => {
             this.openSnackBar('Failed to load');
@@ -176,7 +182,7 @@ export class ClientTicketsComponent implements OnInit {
         (error) => {
             this.loading = false;
             this.openSnackBar('Failed to load Problems');
-            this.getClientProduct();
+            // this.getClientProduct();
         });
     }
 
@@ -249,6 +255,13 @@ export class ClientTicketsComponent implements OnInit {
                 this.getClientProduct();
             }
         });
+    }
+
+    onClientChange(event){
+        this.ticketForm.get('client_product_id').enable();
+        this.data.client_id = event.value;
+        this.ticketForm.get('client_id').setValue(event.value);
+        this.getClientProduct();
     }
 
     addTicket(){

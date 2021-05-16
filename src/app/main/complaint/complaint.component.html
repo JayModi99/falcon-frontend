@@ -16,7 +16,7 @@
             <div class="logo mb-24 mb-md-0"
                  fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
-                    category
+                    receipt_long
                 </mat-icon>
                 <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
                     Complaint
@@ -55,13 +55,13 @@
                 </thead>
                 <tbody>
                     <tr *ngIf="loading">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Loading...</td>
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">Loading...</td>
                     </tr>
                     <tr *ngIf="failed">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">Failed to load</td>
                     </tr>
                     <tr *ngIf="tickets == '' && !loading && !failed">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">No records found</td>
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">No records found</td>
                     </tr>
                     <tr *ngFor="let t of tickets; let i = index">
                         <td>{{ i+1 }}</td>
@@ -69,16 +69,16 @@
                         <td>{{ t.problem_name }}</td>
                         <td>{{ t.details }}</td>
                         <td>
-                            <mat-form-field *ngIf="!t.engineer_id" style="width: 85%;" appearance="">
+                            <mat-form-field *ngIf="!t.engineer_name" style="width: 85%;" appearance="">
                                 <mat-label>Engineer</mat-label>
-                                <mat-select (selectionChange)="onAssignEngineerChange(i)" formControlName="engineer_id">
+                                <mat-select (selectionChange)="onAssignEngineerChange($event, i)" name="engineer_id">
                                     <mat-option *ngIf="!engineers" disabled>Failed to Load</mat-option>
-                                    <mat-option *ngFor="let e of engineers" [value]="e.id">
+                                    <mat-option *ngFor="let e of engineers" [value]="e.name">
                                         {{e.name}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
-                            <p *ngIf="t.engineer_id">{{ t.engineer_name }}</p>
+                            <p *ngIf="t.engineer_name">{{ t.engineer_name }}</p>
                         </td>
                         <td>
                             <p *ngIf="t.status == 0 || !t.status" style="color: red">Not Assigned</p>
@@ -86,7 +86,7 @@
                             <p *ngIf="t.status == 2" style="color: red">Reassign Request</p>
                             <p *ngIf="t.status == 3" style="color: green">Completed</p>
                         </td>
-                        <td><button (click)="ticketComplete(i)" [disabled]="t.status != 1" mat-flat-button style="cursor: pointer;" color="accent"><label>Completed</label></button></td>
+                        <td><button (click)="ticketComplete(i)" [disabled]="t.status != 1" mat-flat-button style="cursor: pointer;" color="accent">Completed</button></td>
                         <!-- <td><button (click)="openProductCategoryAddDialog('Edit', category.id, category.product_category, category.description)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
                         <td><button (click)="deleteProductCategory(category.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td> -->
                     </tr>

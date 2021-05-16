@@ -28,7 +28,7 @@ import { fuseConfig } from 'app/fuse-config';
 import { AppComponent } from 'app/app.component';
 import { LayoutModule } from 'app/layout/layout.module';
 import { SampleModule } from 'app/main/sample/sample.module';
-import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { AreasModule } from './main/areas/areas.module';
 import { ProblemModule } from './main/problem/problem.module';
 
@@ -80,7 +80,7 @@ const appRoutes: Routes = [
     ],
     providers   : [
         AuthGuardService,
-        {provide: LocationStrategy, useClass: PathLocationStrategy}
+        {provide: LocationStrategy, useClass: HashLocationStrategy}
     ],
     bootstrap   : [
         AppComponent

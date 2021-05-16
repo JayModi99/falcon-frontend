@@ -79,8 +79,9 @@ export class ComplaintComponent implements OnInit {
         });
     }
 
-    onAssignEngineerChange(index){
+    onAssignEngineerChange(event, index){
         this.tickets[index].status = 1;
+        this.tickets[index].engineer_name = event.value;
     }
 
     ticketComplete(index){

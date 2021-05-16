@@ -34,7 +34,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Product',
                 translate: 'Product',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'shopping_cart',
                 url      : '/product'
             },
             {
@@ -42,7 +42,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Area',
                 translate: 'Area',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'location_on',
                 url      : '/area'
             },
             {
@@ -50,7 +50,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Problem',
                 translate: 'Problem',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'error',
                 url      : '/problem'
             },
             {
@@ -58,7 +58,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Engineer',
                 translate: 'Engineer',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'perm_contact_calendar',
                 url      : '/engineer'
             },
             {
@@ -66,7 +66,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Client',
                 translate: 'Client',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'group',
                 url      : '/client'
             },
             {
@@ -74,7 +74,7 @@ export const navigation: FuseNavigation[] = [
                 title    : 'Complaint',
                 translate: 'Complaint',
                 type     : 'item',
-                icon     : 'inventory_2',
+                icon     : 'receipt_long',
                 url      : '/complaint'
             }
         ]
