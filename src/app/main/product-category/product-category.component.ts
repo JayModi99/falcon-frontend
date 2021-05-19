@@ -1,5 +1,5 @@
 import { FalconService } from './../../service/falcon.service';
-import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -38,17 +38,28 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     ngOnInit(){
+        this.productCategory = JSON.parse(window.localStorage.getItem('productCategory'));
         this.getProductCategory();
      }
+
+    @HostListener('window:storage', ['$event'])
+    onStorageChange(event) {
+        if(event.key == 'productCategory' && this.productCategory != event.newValue){
+            this.productCategory = JSON.parse(event.newValue);
+        }    
+    }
 
     getProductCategory(){
         this.dataLoading = true;
         this.failed = false;
         this.falconService.getProductCategory()
         .subscribe((result) => {
-            console.log(result);
-            this.productCategory = result;
             this.dataLoading = false;
+            if(result != JSON.parse(window.localStorage.getItem('productCategory')))
+            {
+                this.productCategory = result;
+                localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
+            }
         },
         (error) => {
             this.openSnackBar('Failed to load');
@@ -96,6 +107,7 @@ export class ProductCategoryComponent implements OnInit {
                         this.openSnackBar('Product Category Deleted');
                         this.loading = false;
                         this.productCategory.splice(index, 1);
+                        localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
                     }
                 },
                 (error) => {
