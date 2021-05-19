@@ -1,3 +1,4 @@
+import { DeleteDialog } from 'app/main/dialog/delete-dialog/delete-dialog.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddProblemDialog, ProblemComponent } from './problem.component';
@@ -37,10 +38,12 @@ import { FuseSharedModule } from '@fuse/shared.module';
     ],
     declarations: [
         ProblemComponent,
-        AddProblemDialog
+        AddProblemDialog,
+        DeleteDialog
     ],
     entryComponents: [
-        AddProblemDialog
+        AddProblemDialog,
+        DeleteDialog
     ]
 })
 export class ProblemModule { }

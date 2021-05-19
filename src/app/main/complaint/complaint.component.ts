@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FalconService } from 'app/service/falcon.service';
 import { AddTicketDialog } from '../view-client/tabs/client-tickets/client-tickets.component';
+import { DeleteDialog } from '../dialog/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-complaint',
@@ -59,14 +60,14 @@ export class ComplaintComponent implements OnInit {
         });
     }
 
-    openTicketAddDialog(type, id, clientProduct, clientId) {
+    openTicketAddDialog(type, id, ticket, clientId) {
         const dialogRef = this.dialog.open(AddTicketDialog, {
             disableClose: true, 
             autoFocus: false,
             data: {
                 type: type,
                 id: id,
-                ticket: clientProduct,
+                ticket: ticket,
                 client_id: clientId
             }
         });
@@ -79,13 +80,64 @@ export class ComplaintComponent implements OnInit {
         });
     }
 
+    deleteTicket(id, index){
+        const dialogRef = this.dialog.open(DeleteDialog, {
+            disableClose: true, 
+            autoFocus: false
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            if(result == 1){
+                this.loading = true;
+                this.falconService.deleteTicket(id)
+                .subscribe((result: any) => {
+                    this.openSnackBar('Ticket Deleted');
+                    this.tickets.splice(index, 1);
+                    this.loading = false;
+                },
+                (error) => {
+                    this.openSnackBar('Failed to Delete');
+                    this.loading = false;
+                });
+            }
+        });
+    }
+
     onAssignEngineerChange(event, index){
-        this.tickets[index].status = 1;
-        this.tickets[index].engineer_name = event.value;
+        this.loading = true;
+        let data = {
+            id: index,
+            engineer_id: event.value,
+            status: 1
+        };
+        this.falconService.assignEngineer(data)
+        .subscribe((result) => {
+            this.getAllTickets();
+            this.openSnackBar('Engineer assigned successfuly');
+            this.loading = false;
+        },
+        (error) => {
+            this.loading = false;
+            this.openSnackBar('Failed to assign engineer');
+        });
     }
 
     ticketComplete(index){
-        this.tickets[index].status = 3;
+        this.loading = true;
+        let data = {
+            'id': index,
+            'status': 3
+        };
+        this.falconService.changeStatus(data)
+        .subscribe((result) => {
+            this.getAllTickets();
+            this.openSnackBar('Status updated successfuly');
+            this.loading = false;
+        },
+        (error) => {
+            this.loading = false;
+            this.openSnackBar('Failed to update successfuly');
+        });
     }
 
     openSnackBar(message: string) {
@@ -95,4 +147,3 @@ export class ComplaintComponent implements OnInit {
     }
 
 }
-

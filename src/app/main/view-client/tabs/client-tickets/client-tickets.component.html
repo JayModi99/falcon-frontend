@@ -1,12 +1,13 @@
-<table>
+<table style="overflow-y: scroll;">
     <thead>
         <tr>
             <th>#</th>
             <th>Product</th>
             <th>Problem</th>
             <th>Details</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Assign Engineer</th>
+            <th>Status</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -24,8 +25,29 @@
             <td>{{ ticket.product_category }} - {{ ticket.name }}</td>
             <td>{{ ticket.problem_name }}</td>
             <td>{{ ticket.details }}</td>
-            <td><button (click)="openTicketAddDialog('Edit', ticket.id, ticket, clientId)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
-            <td><button (click)="deleteTicket(ticket.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td>
+            <td>
+                <mat-form-field *ngIf="!ticket.engineer_id" style="width: 85%;" appearance="">
+                    <mat-label>Engineer</mat-label>
+                    <mat-select (selectionChange)="onAssignEngineerChange($event, ticket.id)">
+                        <mat-option *ngIf="!engineers" disabled>Failed to Load</mat-option>
+                        <mat-option *ngFor="let e of engineers" [value]="e.id">
+                            {{e.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <p *ngIf="ticket.engineer_id">{{ ticket.engineer_name }}</p>
+            </td>
+            <td>
+                <p *ngIf="ticket.status == 0 || !ticket.status" style="color: red">Not Assigned</p>
+                <p *ngIf="ticket.status == 1" style="color: gold">Assigned</p>
+                <p *ngIf="ticket.status == 2" style="color: red">Reassign Request</p>
+                <p *ngIf="ticket.status == 3" style="color: green">Completed</p>
+            </td>
+            <td>
+                <button *ngIf="ticket.status != 3" (click)="openTicketAddDialog('Edit', ticket.id, ticket, clientId)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
+                <button *ngIf="ticket.status != 3" (click)="deleteTicket(ticket.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
+                <button *ngIf="ticket.status != 3" (click)="ticketComplete(ticket.id)" [disabled]="ticket.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
+            </td>
         </tr>
     </tbody>
 </table>

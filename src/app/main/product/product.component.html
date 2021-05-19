@@ -26,7 +26,7 @@
 
             <!-- ADD BUTTON -->
             <div style="display: flex; align-items: center;">
-                <button mat-raised-button (click)="openAddDialog('Add', 0, '', '')">
+                <button mat-raised-button (click)="openAddDialog('Add', 0, 0, '', '')">
                     ADD
                     <mat-icon style="margin-left: 3px;">add</mat-icon>
                 </button>
@@ -37,13 +37,14 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card">
+        <div class="content-card" style="overflow-y: scroll;">
             
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Product Category</th>
+                        <th>Product Name</th>
                         <th>Description</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -51,20 +52,21 @@
                 </thead>
                 <tbody>
                     <tr *ngIf="dataLoading">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Loading...</td>
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">Loading...</td>
                     </tr>
                     <tr *ngIf="failed">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">Failed to load</td>
                     </tr>
-                    <tr *ngIf="!productCategory && !dataLoading">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">No records found</td>
+                    <tr *ngIf="!products && !dataLoading">
+                        <td colspan="6" style="text-align: center; padding: 15px 0px;">No records found</td>
                     </tr>
-                    <tr *ngFor="let category of productCategory; let i = index">
+                    <tr *ngFor="let product of products; let i = index">
                         <td>{{ i+1 }}</td>
-                        <td>{{ category.product_category }}</td>
-                        <td>{{ category.description }}</td>
-                        <td><button (click)="openAddDialog('Edit', category.id, category.product_category, category.description)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
-                        <td><button (click)="deleteProductCategory(category.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td>
+                        <td>{{ product.product_category }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td><button (click)="openAddDialog('Edit', product.id, product.category_id, product.name, product.description)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
+                        <td><button (click)="deleteProduct(product.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td>
                     </tr>
                 </tbody>
             </table>

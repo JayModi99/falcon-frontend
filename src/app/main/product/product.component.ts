@@ -4,11 +4,14 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { FalconService } from 'app/service/falcon.service';
+import { DeleteDialog } from '../dialog/delete-dialog/delete-dialog.component';
+import { AddProductCategoryDialog } from 'app/main/product-category/product-category.component';
 
 export interface DialogData {
     type: string;
     id: number;
-    product_category: string;
+    category_id: number;
+    name: string;
     description: string;
 }
 
@@ -22,7 +25,7 @@ export class ProductComponent implements OnInit {
     dataLoading: boolean = true;
     loading: boolean = false;
     failed: boolean = false;
-    productCategory: any;
+    products: any;
 
     constructor(
         private titleService: Title,
@@ -30,19 +33,19 @@ export class ProductComponent implements OnInit {
         public dialog: MatDialog,
         private snackBar: MatSnackBar
     ){ 
-        this.titleService.setTitle("Falcon - Product Category");
+        this.titleService.setTitle("Falcon - Product");
     }
 
     ngOnInit(){
-        this.getProductCategory();
+        this.getProduct();
      }
 
-    getProductCategory(){
+    getProduct(){
         this.dataLoading = true;
         this.failed = false;
-        this.falconService.getProductCategory()
+        this.falconService.getProduct()
         .subscribe((result) => {
-            this.productCategory = result;
+            this.products = result;
             this.dataLoading = false;
         },
         (error) => {
@@ -52,37 +55,47 @@ export class ProductComponent implements OnInit {
         });
     }
 
-    openAddDialog(type, id, product_category, description) {
+    openAddDialog(type, id, category_id, name, description) {
         const dialogRef = this.dialog.open(AddProductDialog, {
             disableClose: true, 
             autoFocus: false,
             data: {
                 type: type,
                 id: id,
-                product_category: product_category,
+                category_id: category_id,
+                name: name,
                 description: description
             }
         });
     
         dialogRef.afterClosed().subscribe(result => {
             if(result != 0){
-                this.productCategory = null;
-                this.getProductCategory();
+                this.products = null;
+                this.getProduct();
             }
         });
     }
 
-    deleteProductCategory(id, index){
-        this.loading = true;
-        this.falconService.deleteProductCategory(id)
-        .subscribe((result) => {
-            this.openSnackBar('Product Category Deleted');
-            this.loading = false;
-            this.productCategory.splice(index, 1);
-        },
-        (error) => {
-            this.openSnackBar('Failed to Delete');
-            this.loading = false;
+    deleteProduct(id, index){
+        const dialogRef = this.dialog.open(DeleteDialog, {
+            disableClose: true, 
+            autoFocus: false
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            if(result == 1){
+                this.loading = true;
+                this.falconService.deleteProduct(id)
+                .subscribe((result) => {
+                    this.openSnackBar('Product Deleted');
+                    this.loading = false;
+                    this.products.splice(index, 1);
+                },
+                (error) => {
+                    this.openSnackBar('Failed to Delete');
+                    this.loading = false;
+                });
+            }
         });
     }
 
@@ -100,8 +113,8 @@ export class ProductComponent implements OnInit {
   })
   export class AddProductDialog {
 
-    productCategoryForm: FormGroup;
-
+    productForm: FormGroup;
+    productCategory: any;
     loading: boolean = false;
 
     constructor(
@@ -109,32 +122,70 @@ export class ProductComponent implements OnInit {
         public dialogRef: MatDialogRef<AddProductDialog>,
         private _formBuilder: FormBuilder,
         private falconService: FalconService,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        public dialog: MatDialog
     ){ }
 
     ngOnInit(): void
     {
-        this.productCategoryForm = this._formBuilder.group({
-            product_category: [this.data.product_category, [Validators.required]],
+        this.getProductCategory();
+        this.productForm = this._formBuilder.group({
+            name: [this.data.name, [Validators.required]],
+            category_id: [this.data.category_id, [Validators.required]],
             description: [this.data.description, [Validators.required]]
         });
     }
 
-    addProductCategory(){
+    getProductCategory(){
+        this.loading = true;
+        this.falconService.getProductCategory()
+        .subscribe((result) => {
+            console.log(result);
+            this.productCategory = result;
+            this.loading = false;
+        },
+        (error) => {
+            this.openSnackBar('Failed to load');
+            this.loading = false;
+        });
+    }
+
+    openProductCategoryAddDialog() {
+        const dialogRef = this.dialog.open(AddProductCategoryDialog, {
+            disableClose: true, 
+            autoFocus: false,
+            data: {
+                type: 'Add',
+                id: 0,
+                product_category: '',
+                description: ''
+            }
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            if(result != 0){
+                this.productCategory.length = 0;
+                this.getProductCategory();
+            }
+        });
+    }
+
+    addProduct(){
         this.loading = true;
 
         var data = {
             id: this.data.id,
             org_id: localStorage.getItem('userId'),
-            product_category: this.productCategoryForm.get('product_category').value,
-            description: this.productCategoryForm.get('description').value,
+            category_id: this.productForm.get('category_id').value,
+            name: this.productForm.get('name').value,
+            description: this.productForm.get('description').value,
             created_by: localStorage.getItem('userId')
         };
 
         if(this.data.id == 0){
-            this.falconService.addProductCategory(data)
+            this.falconService.addProduct(data)
             .subscribe((result) => {
-                this.openSnackBar('Product Category successfuly added');
+                this.openSnackBar('Product successfuly added');
                 this.loading = false;
                 this.dialogRef.close();
             },
@@ -144,9 +195,9 @@ export class ProductComponent implements OnInit {
             });
         }
         else{
-            this.falconService.editProductCategory(data)
+            this.falconService.editProduct(data)
             .subscribe((result) => {
-                this.openSnackBar('Product Category successfuly edited');
+                this.openSnackBar('Product successfuly edited');
                 this.loading = false;
                 this.dialogRef.close();
             },

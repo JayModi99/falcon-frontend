@@ -8,8 +8,8 @@ import { Subject, Observable } from 'rxjs';
 })
 export class FalconService {
     
-    //private url: string = "http://localhost:8000/api/";
-    private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
+    private url: string = "http://localhost:8000/api/";
+    //private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
 
     userId = localStorage.getItem('userId');
 
@@ -195,6 +195,14 @@ export class FalconService {
 
     deleteTicket(id){
         return this.http.delete(this.url + 'ticket/deleteById/' + id);
+    }
+
+    assignEngineer(data){
+        return this.http.post(this.url + 'ticket/assignEngineer', data);
+    }
+
+    changeStatus(data){
+        return this.http.post(this.url + 'ticket/changeStatus', data);
     }
 
 }

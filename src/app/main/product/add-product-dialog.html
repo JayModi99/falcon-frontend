@@ -1,12 +1,26 @@
 <h2 mat-dialog-title>{{ data.type }} Product</h2>
 <mat-dialog-content class="mat-typography">
-    <form style="text-align: center;" [formGroup]="productCategoryForm">
+    <form style="text-align: center;" [formGroup]="productForm">
+
+        <mat-form-field style="width: 85%;" appearance="">
+            <mat-label>Product Category</mat-label>
+            <mat-select formControlName="category_id" required>
+                <mat-option *ngIf="!productCategory" disabled>Failed to Load</mat-option>
+                <mat-option *ngFor="let category of productCategory" [value]="category.id">
+                    {{category.product_category}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('category_id').hasError('required')">
+                Product Category is required
+            </mat-error>
+        </mat-form-field>
+        <mat-icon (click)="openProductCategoryAddDialog()" style="cursor: pointer;">add</mat-icon>
                 
         <mat-form-field style="width: 90%;" appearance="">
-            <mat-label>Product Category</mat-label>
-            <input matInput formControlName="product_category" required>
+            <mat-label>Product Name</mat-label>
+            <input matInput formControlName="name" required>
             <mat-icon matSuffix class="secondary-text">title</mat-icon>
-            <mat-error *ngIf="productCategoryForm.get('product_category').hasError('required')">
+            <mat-error *ngIf="productForm.get('name').hasError('required')">
                 Product Category is required
             </mat-error>
         </mat-form-field>
@@ -15,7 +29,7 @@
             <mat-label>Description</mat-label>
             <input matInput formControlName="description" required>
             <mat-icon matSuffix class="secondary-text">description</mat-icon>
-            <mat-error *ngIf="productCategoryForm.get('description').hasError('required')">
+            <mat-error *ngIf="productForm.get('description').hasError('required')">
                 Description is required
             </mat-error>
         </mat-form-field>
@@ -24,7 +38,7 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close="0">Cancel</button>
-  <button (click)="addProductCategory()" [disabled]="productCategoryForm.invalid" mat-flat-button color="accent">{{ data.type }}</button>
+  <button (click)="addProduct()" [disabled]="productForm.invalid" mat-flat-button color="accent">{{ data.type }}</button>
 </mat-dialog-actions>
 <div class="overlay" *ngIf="loading">
   <div class="spinner">

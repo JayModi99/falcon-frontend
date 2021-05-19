@@ -5,6 +5,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
+import { DeleteDialog } from '../dialog/delete-dialog/delete-dialog.component';
 
 export interface DialogData {
     type: string;
@@ -77,16 +78,31 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     deleteProductCategory(id, index){
-        this.loading = true;
-        this.falconService.deleteProductCategory(id)
-        .subscribe((result) => {
-            this.openSnackBar('Product Category Deleted');
-            this.loading = false;
-            this.productCategory.splice(index, 1);
-        },
-        (error) => {
-            this.openSnackBar('Failed to Delete');
-            this.loading = false;
+        const dialogRef = this.dialog.open(DeleteDialog, {
+            disableClose: true, 
+            autoFocus: false
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            if(result == 1){
+                this.loading = true;
+                this.falconService.deleteProductCategory(id)
+                .subscribe((result) => {
+                    if(result == 'Products are linked'){
+                        this.openSnackBar('Products are linked');
+                        this.loading = false;
+                    }
+                    else{
+                        this.openSnackBar('Product Category Deleted');
+                        this.loading = false;
+                        this.productCategory.splice(index, 1);
+                    }
+                },
+                (error) => {
+                    this.openSnackBar('Failed to Delete');
+                    this.loading = false;
+                });
+            }
         });
     }
 
@@ -168,3 +184,4 @@ export class ProductCategoryComponent implements OnInit {
     }
 
   }
+

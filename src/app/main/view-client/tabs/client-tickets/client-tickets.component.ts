@@ -27,6 +27,7 @@ export class ClientTicketsComponent implements OnInit {
     clientId: number;
 
     tickets: any;
+    engineers: any;
 
     loading: boolean = false;
     dataLoading: boolean = false;
@@ -48,6 +49,7 @@ export class ClientTicketsComponent implements OnInit {
 
     ngOnInit() {
         this.getTicket();
+        this.getEngineer();
     }
 
     getTicket(){
@@ -65,14 +67,24 @@ export class ClientTicketsComponent implements OnInit {
         });
     }
 
-    openTicketAddDialog(type, id, clientProduct, clientId) {
+    getEngineer(){
+        this.falconService.getEngineer()
+        .subscribe((result) => {
+            this.engineers = result;
+        },
+        (error) => {
+            this.openSnackBar('Failed to load');
+        });
+    }
+
+    openTicketAddDialog(type, id, ticket, clientId) {
         const dialogRef = this.dialog.open(AddTicketDialog, {
             disableClose: true, 
             autoFocus: false,
             data: {
                 type: type,
                 id: id,
-                ticket: clientProduct,
+                ticket: ticket,
                 client_id: clientId
             }
         });
@@ -105,6 +117,43 @@ export class ClientTicketsComponent implements OnInit {
                     this.loading = false;
                 });
             }
+        });
+    }
+
+    onAssignEngineerChange(event, index){
+        this.loading = true;
+        let data = {
+            id: index,
+            engineer_id: event.value,
+            status: 1
+        };
+        this.falconService.assignEngineer(data)
+        .subscribe((result) => {
+            this.getTicket();
+            this.openSnackBar('Engineer assigned successfuly');
+            this.loading = false;
+        },
+        (error) => {
+            this.loading = false;
+            this.openSnackBar('Failed to assign engineer');
+        });
+    }
+
+    ticketComplete(index){
+        this.loading = true;
+        let data = {
+            'id': index,
+            'status': 3
+        };
+        this.falconService.changeStatus(data)
+        .subscribe((result) => {
+            this.getTicket();
+            this.openSnackBar('Status updated successfuly');
+            this.loading = false;
+        },
+        (error) => {
+            this.loading = false;
+            this.openSnackBar('Failed to update successfuly');
         });
     }
 
