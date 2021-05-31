@@ -1,95 +1,5 @@
 @import "src/@fuse/scss/fuse";
-
-.dot-elastic {
-    position: relative;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #9880ff;
-    color: #9880ff;
-    animation: dotElastic 1s infinite linear;
-  }
-  
-  .dot-elastic::before, .dot-elastic::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0;
-  }
-  
-  .dot-elastic::before {
-    left: -15px;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #9880ff;
-    color: #9880ff;
-    animation: dotElasticBefore 1s infinite linear;
-  }
-  
-  .dot-elastic::after {
-    left: 15px;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #9880ff;
-    color: #9880ff;
-    animation: dotElasticAfter 1s infinite linear;
-  }
-  
-  @keyframes dotElasticBefore {
-    0% {
-      transform: scale(1, 1);
-    }
-    25% {
-      transform: scale(1, 1.5);
-    }
-    50% {
-      transform: scale(1, 0.67);
-    }
-    75% {
-      transform: scale(1, 1);
-    }
-    100% {
-      transform: scale(1, 1);
-    }
-  }
-  
-  @keyframes dotElastic {
-    0% {
-      transform: scale(1, 1);
-    }
-    25% {
-      transform: scale(1, 1);
-    }
-    50% {
-      transform: scale(1, 1.5);
-    }
-    75% {
-      transform: scale(1, 1);
-    }
-    100% {
-      transform: scale(1, 1);
-    }
-  }
-  
-  @keyframes dotElasticAfter {
-    0% {
-      transform: scale(1, 1);
-    }
-    25% {
-      transform: scale(1, 1);
-    }
-    50% {
-      transform: scale(1, 0.67);
-    }
-    75% {
-      transform: scale(1, 1.5);
-    }
-    100% {
-      transform: scale(1, 1);
-    }
-  }
+@import url(https://fonts.googleapis.com/css?family=Audiowide);
 
 table {
     border-collapse: collapse;
@@ -100,7 +10,7 @@ table {
 th {
     padding: 15px 0px 15px 35px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd !important;
 }
 
 tbody :hover{
@@ -110,8 +20,46 @@ tbody :hover{
 td {
     padding: 5px 0px 5px 35px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd !important;
+    border-bottom: 1px solid #ddd !important;
 }
+
+.loading {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.loading__letter1, .loading__letter2, .loading__letter3{
+    // font-size: 30px;
+    letter-spacing: 2px;
+    animation-name: bounce;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+}
+
+.loading__letter1 {
+    animation-delay: .1s; 
+  }
+  .loading__letter2 {
+    animation-delay: .2s;
+  }
+  .loading__letter3 {
+    animation-delay: .3s; 
+  }
+
+  @keyframes bounce {
+    0% {
+      transform: translateY(0px)
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    80%,
+    100% {
+      transform: translateY(0px);
+    }
+  }
 
 .spinner {
     position: absolute;
@@ -132,8 +80,6 @@ td {
     position:   fixed;
 }
 
-e-commerce-products {
-
     #products {
 
         .top-bg {
@@ -146,13 +92,43 @@ e-commerce-products {
         > .center {
 
             > .header {
+
+                .search-wrapper {
+                    width: 100%;
+                    max-width: 480px;
+                    border-radius: 28px;
+                    overflow: hidden;
+                    @include mat-elevation(1);
+                
+                    @include media-breakpoint('xs') {
+                        width: 100%;
+                    }
+                
+                    .search {
+                        width: 100%;
+                        height: 48px;
+                        line-height: 48px;
+                        padding: 0 18px;
+                
+                        input {
+                            width: 100%;
+                            height: 48px;
+                            min-height: 48px;
+                            max-height: 48px;
+                            padding: 0 16px;
+                            border: none;
+                            outline: none;
+                        }
+                    }
+                }
+
                 @include media-breakpoint('lt-md') {
                     padding: 8px 0;
                     height: 192px !important;
                     min-height: 192px !important;
                     max-height: 192px !important;
                 }
+                
             }
         }
     }
-}

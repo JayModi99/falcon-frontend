@@ -13,6 +13,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { RouterModule } from '@angular/router';
 import { FuseSharedModule } from '@fuse/shared.module';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   imports: [
@@ -31,7 +33,9 @@ import { FuseSharedModule } from '@fuse/shared.module';
     MatSnackBarModule,
     MatDialogModule,
 
-    FuseSharedModule
+    FuseSharedModule,
+    InfiniteScrollModule,
+    MatTabsModule
   ],
   declarations: [ComplaintComponent]
 })

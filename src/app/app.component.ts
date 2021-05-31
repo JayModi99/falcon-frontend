@@ -1,4 +1,5 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
 import { TranslateService } from '@ngx-translate/core';
@@ -22,6 +23,26 @@ import { locale as navigationTurkish } from 'app/navigation/i18n/tr';
 })
 export class AppComponent implements OnInit, OnDestroy
 {
+
+    @HostListener('window:storage', ['$event']) 
+    userId(event) {
+        console.log(event);
+        // if(event.key == 'userId'){
+        //     if(event.newValue == null){
+        //         localStorage.clear();
+        //         this.router.navigate(['login']);
+        //     }
+        //     else if(event.oldValue != null)
+        // }
+        if((event.key == 'userId' && event.newValue != event.oldValue)){
+            localStorage.clear();
+            this.router.navigate(['login']);
+        }
+        else if(event.key == 'userId'){
+            this.router.navigate(['client']);
+        }
+    }
+
     fuseConfig: any;
     navigation: any;
 
@@ -48,7 +69,8 @@ export class AppComponent implements OnInit, OnDestroy
         private _fuseSplashScreenService: FuseSplashScreenService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _translateService: TranslateService,
-        private _platform: Platform
+        private _platform: Platform,
+        private router: Router
     )
     {
         // Get default navigation

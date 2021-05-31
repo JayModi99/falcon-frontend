@@ -9,7 +9,7 @@ import { Subject, Observable } from 'rxjs';
 export class FalconService {
     
     private url: string = "http://localhost:8000/api/";
-    //private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
+    // private url: string = 'https://falcon-api.fi.tempcloudsite.com/api/';
 
     userId = localStorage.getItem('userId');
 
@@ -175,9 +175,9 @@ export class FalconService {
         return this.http.delete(this.url + 'clientProduct/deleteById/' + id);
     }
 
-    getAllTicket(){
+    getAllTicket(search, orderBy, order, offset){
         var userId = localStorage.getItem('userId');
-        return this.http.get(this.url + 'ticket/getAll/' + userId);
+        return this.http.get(this.url + 'ticket/getAll/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
     }
 
     getTicket(cid){
@@ -203,6 +203,11 @@ export class FalconService {
 
     changeStatus(data){
         return this.http.post(this.url + 'ticket/changeStatus', data);
+    }
+
+    assigningRecommendationsEngineer(areaid, problemid){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'ticket/assigningRecommendationsEngineer/' + userId + '/' + areaid + '/' + problemid);
     }
 
 }

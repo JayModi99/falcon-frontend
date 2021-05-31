@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { FalconService } from './../../service/falcon.service';
 import { Component, HostListener, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
@@ -32,7 +33,8 @@ export class ProductCategoryComponent implements OnInit {
         private titleService: Title,
         private falconService: FalconService,
         public dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private router: Router
     ){ 
         this.titleService.setTitle("Falcon - Product Category");
     }

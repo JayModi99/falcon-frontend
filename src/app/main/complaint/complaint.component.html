@@ -24,9 +24,19 @@
             </div>
             <!-- / APP TITLE -->
 
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0" style="background-color: #fff;">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon style="color: rgba(0, 0, 0, 0.54);">search</mat-icon>
+                    <input #filter placeholder="Search..." name="search" [ngModel]="search" (keyup.enter)="onSearch($event.target.value)">
+                    <button [disabled]="(search == null || search == '') && orderBy == 'tickets.id' && order == 'desc'" (click)="resetFilters()" color="accent" mat-button>Reset</button>
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
             <!-- ADD BUTTON -->
             <div style="display: flex; align-items: center;">
-                <button mat-raised-button (click)="openTicketAddDialog('Add', 0, '', '')">
+                <button mat-raised-button (click)="openTicketAddDialog('Add', 0, '', '')" class="add-product-button fuse-white mt-24 mt-md-0">
                     ADD
                     <mat-icon style="margin-left: 3px;">add</mat-icon>
                 </button>
@@ -37,65 +47,110 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card" style="overflow-y: scroll;">
+        <div class="content-card" style="overflow-y: auto;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="isInfiniteScrollDisabled" (scrolled)="onScroll()">
             
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Client</th>
-                        <th>Product</th>
-                        <th>Problem</th>
-                        <th>Details</th>
-                        <th>Assign Engineer</th>
-                        <th>Status</th>
-                        <th></th>
-                        <!-- <th>Edit</th>
-                        <th>Delete</th> -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngIf="loading">
-                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Loading...</td>
-                    </tr>
-                    <tr *ngIf="failed">
-                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
-                    </tr>
-                    <tr *ngIf="tickets == '' && !loading && !failed">
-                        <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
-                    </tr>
-                    <tr *ngFor="let t of tickets; let i = index">
-                        <td>{{ i+1 }}</td>
-                        <td>{{ t.organisation_name }}</td>
-                        <td>{{ t.product_category }} {{ t.name }}</td>
-                        <td>{{ t.problem_name }}</td>
-                        <td>{{ t.details }}</td>
-                        <td>
-                            <mat-form-field *ngIf="!t.engineer_id" style="width: 85%;" appearance="">
-                                <mat-label>Engineer</mat-label>
-                                <mat-select (selectionChange)="onAssignEngineerChange($event, t.id)">
-                                    <mat-option *ngIf="!engineers" disabled>Failed to Load</mat-option>
-                                    <mat-option *ngFor="let e of engineers" [value]="e.id">
-                                        {{e.name}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <p *ngIf="t.engineer_id">{{ t.engineer_name }}</p>
-                        </td>
-                        <td>
-                            <p *ngIf="t.status == 0 || !t.status" style="color: red">Not Assigned</p>
-                            <p *ngIf="t.status == 1" style="color: gold">Assigned</p>
-                            <p *ngIf="t.status == 2" style="color: red">Reassign Request</p>
-                            <p *ngIf="t.status == 3" style="color: green">Completed</p>
-                        </td>
-                        <td>
-                            <button *ngIf="t.status != 3" (click)="openTicketAddDialog('Edit', t.id, t, t.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
-                            <button *ngIf="t.status != 3" (click)="deleteTicket(t.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
-                            <button *ngIf="t.status != 3" (click)="ticketComplete(t.id)" [disabled]="t.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <mat-tab-group dynamicHeight="true" color="accent">
+    
+                <mat-tab label="All">
+
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>
+                                    <span (click)="onColumnSort('clients.organisation_name')" style="cursor: pointer;">Client</span>
+                                    <mat-icon (click)="onColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
+                                    <mat-icon (click)="onColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
+                                </th>
+                                <th>
+                                    <span (click)="onColumnSort('product_categories.product_category')" style="cursor: pointer;">Product</span>
+                                    <mat-icon (click)="onColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
+                                    <mat-icon (click)="onColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
+                                </th>
+                                <th>
+                                    <span (click)="onColumnSort('problems.problem_name')" style="cursor: pointer;">Problem</span>
+                                    <mat-icon (click)="onColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
+                                    <mat-icon (click)="onColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
+                                </th>
+                                <th>
+                                    <span (click)="onColumnSort('tickets.details')" style="cursor: pointer;">Details</span>
+                                    <mat-icon (click)="onColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
+                                    <mat-icon (click)="onColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
+                                </th>
+                                <th>Assign Engineer</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="loading">
+                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                    <div class="loading">
+                                        <div>Loading</div>
+                                        <div class="loading__letter1">.</div>
+                                        <div class="loading__letter2">.</div>
+                                        <div class="loading__letter3">.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="failed">
+                                <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                            </tr>
+                            <tr *ngIf="tickets == '' && !loading && !failed">
+                                <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
+                            </tr>
+                            <tr *ngFor="let t of tickets; let i = index">
+                                <td>{{ i+1 }}</td>
+                                <td>{{ t.organisation_name }}</td>
+                                <td>{{ t.product_category }} {{ t.name }}</td>
+                                <td>{{ t.problem_name }}</td>
+                                <td>{{ t.details }}</td>
+                                <td>
+                                    <mat-form-field (click)="onAssignEngineerSelectClick(t.area_id, t.problem_id)" *ngIf="!t.engineer_id" style="width: 85%;" appearance="">
+                                        <mat-label>Engineer</mat-label>
+                                        <mat-select (selectionChange)="onAssignEngineerChange($event, t.id)">
+                                            <mat-option *ngIf="loadingEngineer" disabled>Loading...</mat-option>
+                                            <mat-option *ngIf="failedEngineer" disabled>Failed to load</mat-option>
+                                            <mat-option *ngFor="let e of engineers" [value]="e.id">
+                                                {{e.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <p *ngIf="t.engineer_id">{{ t.engineer_name }}</p>
+                                </td>
+                                <td>
+                                    <p *ngIf="t.status == 0 || !t.status" style="color: red">Not Assigned</p>
+                                    <p *ngIf="t.status == 1" style="color: gold">Assigned</p>
+                                    <p *ngIf="t.status == 2" style="color: red">Reassign Request</p>
+                                    <p *ngIf="t.status == 3" style="color: green">Completed</p>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <button *ngIf="t.status != 3" (click)="openTicketAddDialog('Edit', t.id, t, t.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
+                                    <button *ngIf="t.status != 3" (click)="deleteTicket(t.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
+                                    <button *ngIf="t.status != 3" (click)="ticketComplete(t.id)" [disabled]="t.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="infiniteScrollLoading">
+                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                    <div class="loading">
+                                        <div>Loading More Items</div>
+                                        <div class="loading__letter1">.</div>
+                                        <div class="loading__letter2">.</div>
+                                        <div class="loading__letter3">.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="offset >= totalRows && !loading">
+                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                    No more records to show
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </mat-tab>
+            
+            </mat-tab-group>
 
         </div>
         <!-- / CONTENT CARD -->
@@ -103,8 +158,8 @@
     <!-- / CENTER -->
 </div>
 
-<div class="overlay" *ngIf="loading">
+<!-- <div class="overlay" *ngIf="loading">
     <div class="spinner">
         <mat-spinner color="accent"></mat-spinner>
     </div>
-</div>
+</div> -->

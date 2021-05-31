@@ -1,3 +1,4 @@
+import { result } from 'lodash';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,10 +17,19 @@ import { DeleteDialog } from '../dialog/delete-dialog/delete-dialog.component';
 })
 export class ComplaintComponent implements OnInit {
 
-    loading: boolean = false;
+    loading: boolean = true;
+    loadingEngineer: boolean = false;
+    failedEngineer:boolean = false;
     failed: boolean = false;
-    tickets: any;
-    engineers: any;
+    tickets: any = [];
+    engineers: any = [];
+    search = '';
+    orderBy = 'tickets.id';
+    order = 'desc';
+    offset = 0;
+    totalRows: number;
+    infiniteScrollLoading: boolean = false;
+    isInfiniteScrollDisabled: boolean = false;
 
     constructor(
         private titleService: Title,
@@ -32,32 +42,89 @@ export class ComplaintComponent implements OnInit {
 
     ngOnInit() {
         this.getAllTickets();
-        this.getEngineer();
+        // this.getEngineer();
       }
 
     getAllTickets(){
-        this.loading = true;
+        var s;
+        if(this.search == ''){
+            s = 'null';
+            this.search = null;
+        }
+        else{
+            s = this.search;
+        }
         this.failed = false;
-        this.falconService.getAllTicket()
-        .subscribe((result) => {
-            this.tickets = result;
+        this.falconService.getAllTicket(s, this.orderBy, this.order, this.offset)
+        .subscribe((result: any) => {
+            // this.tickets = result.data;
+            result.data.forEach(element => {
+                this.tickets.push(element);
+            });
+            // this.tickets = [...this.tickets, ...result.data];
+            this.totalRows = result.totalRows;
+            this.offset += result.data.length;
+            this.isInfiniteScrollDisabled = false;
+            if(this.offset >= result.totalRows){
+                this.isInfiniteScrollDisabled = true;
+            }
             this.loading = false;
+            this.infiniteScrollLoading = false;
         },
         (error) => {
             this.openSnackBar('Failed to load');
             this.loading = false;
             this.failed = true;
+            this.infiniteScrollLoading = false;
         });
     }
 
-    getEngineer(){
-        this.falconService.getEngineer()
-        .subscribe((result) => {
-            this.engineers = result;
-        },
-        (error) => {
-            this.openSnackBar('Failed to load');
-        });
+    resetFilters(){
+        this.loading = true;
+        this.tickets.length = 0;
+        this.search = '';
+        this.orderBy = 'tickets.id';
+        this.order = 'desc';
+        this.offset = null;
+        this.totalRows = null;
+        this.getAllTickets();
+    }
+
+    onSearch(search){
+        this.loading = true;
+        this.tickets.length = 0;
+        this.search = search;
+        this.offset = null;
+        this.totalRows = null;
+        this.getAllTickets();
+    }
+
+    onColumnSort(columnName){
+        this.loading = true;
+        this.tickets.length = 0;
+        this.offset = null;
+        this.totalRows = null;
+        if(this.orderBy == columnName){
+            if(this.order == 'asc'){
+                this.order = 'desc';
+            }
+            else{
+                this.order = 'asc';
+            }
+        }
+        else{
+            this.order = 'asc';
+        }
+        this.orderBy = columnName;
+        this.getAllTickets();
+    }
+
+    onScroll(){
+        if(this.isInfiniteScrollDisabled == false){
+            this.isInfiniteScrollDisabled = true;
+            this.infiniteScrollLoading = true;
+            this.getAllTickets();
+        }
     }
 
     openTicketAddDialog(type, id, ticket, clientId) {
@@ -75,7 +142,8 @@ export class ComplaintComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if(result != 0){
                 this.tickets.length = 0;
-                this.getAllTickets();
+                this.resetFilters();
+                // this.getAllTickets();
             }
         });
     }
@@ -103,6 +171,22 @@ export class ComplaintComponent implements OnInit {
         });
     }
 
+    onAssignEngineerSelectClick(areaid, problemid){
+        this.engineers.length = 0;
+        this.loadingEngineer = true;
+        this.failedEngineer = false;    
+        this.falconService.assigningRecommendationsEngineer(areaid, problemid)
+        .subscribe((result) => {
+            this.loadingEngineer = false;
+            this.engineers = result;
+        },
+        (error) => {
+            this.failedEngineer = true;
+            this.loadingEngineer = false;
+            this.openSnackBar('Failed to load');
+        });
+    }
+
     onAssignEngineerChange(event, index){
         this.loading = true;
         let data = {
@@ -112,7 +196,8 @@ export class ComplaintComponent implements OnInit {
         };
         this.falconService.assignEngineer(data)
         .subscribe((result) => {
-            this.getAllTickets();
+            this.resetFilters();
+            // this.getAllTickets();
             this.openSnackBar('Engineer assigned successfuly');
             this.loading = false;
         },
@@ -130,7 +215,8 @@ export class ComplaintComponent implements OnInit {
         };
         this.falconService.changeStatus(data)
         .subscribe((result) => {
-            this.getAllTickets();
+            this.resetFilters();
+            // this.getAllTickets();
             this.openSnackBar('Status updated successfuly');
             this.loading = false;
         },
