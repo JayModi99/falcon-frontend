@@ -66,7 +66,7 @@
                         <td class="tdClass">{{ client.email }}</td>
                         <td class="tdClass"><button (click)="openClientAddDialog('Edit', client.id, client)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button></td>
                         <td class="tdClass"><button (click)="deleteClient(client.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button></td>
-                        <td class="tdClass"><a style="cursor: pointer;" [routerLink]="'/view-client/' + client.id"><span color="accent">View Details</span></a></td>
+                        <td class="tdClass"><a style="cursor: pointer;" [routerLink]="'/client/' + client.id"><span color="accent">View Details</span></a></td>
                     </tr>
                 </tbody>
             </table>

@@ -1,0 +1,79 @@
+@import "src/@fuse/scss/fuse";
+
+.actions {
+
+    button {
+        text-transform: none;
+        padding: 0 16px;
+        margin: 0 0 0 8px;
+    }
+}
+
+.spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+  
+.overlay {
+    height:100vh;
+    width:100%;
+    background-color:rgba(0, 0, 0, 0.286);
+    z-index:    10;
+    top:        0;
+    left:       0;
+    position:   fixed;
+}
+
+#about {
+    max-width: 1200px;
+}
+
+// Profile boxes
+.profile-box {
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    @include mat-elevation(2);
+
+    header {
+        padding: 16px;
+
+        .title {
+            font-size: 17px;
+        }
+
+        .more {
+            cursor: pointer;
+        }
+    }
+
+    .content {
+        padding: 16px;
+    }
+
+    footer {
+        padding: 8px;
+        border-top: 1px solid;
+    }
+
+    &.info-box {
+
+        .info-line {
+            margin-bottom: 24px;
+
+            .title {
+                font-size: 15px;
+                font-weight: 600;
+                padding-bottom: 4px;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

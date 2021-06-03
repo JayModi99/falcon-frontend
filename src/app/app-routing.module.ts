@@ -1,3 +1,5 @@
+import { ComplaintDetailsComponent } from './main/complaint-details/complaint-details.component';
+import { ComplaintDetailsModule } from './main/complaint-details/complaint-details.module';
 import { ViewClientComponent } from './main/view-client/view-client.component';
 import { EngineerComponent } from './main/engineer/engineer.component';
 import { ComplaintComponent } from './main/complaint/complaint.component';
@@ -25,7 +27,8 @@ const routes: Routes = [
   {path: 'complaint', component: ComplaintComponent, canActivate: [AuthGuard]},
   {path: 'engineer', component: EngineerComponent, canActivate: [AuthGuard]},
   {path: 'problem', component: ProblemComponent, canActivate: [AuthGuard]},
-  {path: 'view-client/:id', component: ViewClientComponent, canActivate: [AuthGuard]},
+  {path: 'client/:id', component: ViewClientComponent, canActivate: [AuthGuard]},
+  {path: 'complaint/:id', component: ComplaintDetailsComponent, canActivate: [AuthGuard]},
   {path: '**', redirectTo: '/product-category'}
 ];
 

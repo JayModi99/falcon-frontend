@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
@@ -186,7 +187,8 @@ export class ClientTicketsComponent implements OnInit {
         private _formBuilder: FormBuilder,
         private falconService: FalconService,
         private snackBar: MatSnackBar,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private router: Router
     ){ }
 
     ngOnInit(): void
@@ -327,10 +329,12 @@ export class ClientTicketsComponent implements OnInit {
         };
         if(this.data.id == 0){
             this.falconService.addTicket(data)
-            .subscribe((result) => {
+            .subscribe((result: any) => {
+                console.log(result.id);
                 this.openSnackBar('Ticket successfuly Generated');
                 this.loading = false;
                 this.dialogRef.close();
+                this.router.navigateByUrl('/complaint/' + result.id);
             },
             (error) => {
                 this.openSnackBar('Failed to Generated Ticket');

@@ -1,5 +1,11 @@
 @import "src/@fuse/scss/fuse";
-@import url(https://fonts.googleapis.com/css?family=Audiowide);
+
+.details {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
 
 table {
     border-collapse: collapse;

@@ -1,0 +1,142 @@
+<div id="order" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-16" [routerLink]="'/complaint'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                     [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2">
+                        Ticket #{{ complaintId }}
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>from&nbsp;</span>
+                        <span>Jay Modi</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <div class="actions" fxLayout="row" fxLayoutAlign="end center" [@animate]="{value:'*',params:{delay:'200ms'}}">
+                <button [disabled]="ticketLoading" *ngIf="ticket?.status != 3" (click)="openTicketAddDialog('Edit', ticket?.id, ticket, ticket?.client_id)" mat-raised-button color="primary" aria-label="Follow">Edit</button>
+                <button [disabled]="ticketLoading" *ngIf="ticket?.status == 1" (click)="ticketComplete(ticket?.id)" mat-raised-button color="" aria-label="Follow">Complete</button>
+                <button [disabled]="ticketLoading" *ngIf="ticket?.status != 3" (click)="deleteTicket(ticket?.id)" mat-raised-button color="warn" aria-label="Send Message">Delete</button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <div class="content-card">
+
+            <mat-tab-group dynamicHeight="true" color="accent">
+
+                <mat-tab label="Ticket Details">
+
+                    <div id="about" class="p-24" fxLayout="row wrap">
+
+                        <div class="about-content" fxLayout="column" fxFlex="100">
+
+                            <div class="profile-box info-box general" fxLayout="column">
+
+                                <header class="accent">
+                                    <div *ngIf="ticket?.organisation_name" class="title">{{ ticket?.organisation_name }}</div>
+                                    <div *ngIf="ticketLoading" class="title"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div>
+                                </header>
+                    
+                                <div class="content">
+                                    <table style="width: 100%; border: none;">
+                                        <tr>
+                                            <td style="width: 50%; border: none;">
+                                                <div class="info-line">
+                                                    <div class="title">Product</div>
+                                                    <div class="info">{{ ticket?.product_category }} {{ ticket?.name }}</div>
+                                                    <div *ngIf="ticketLoading" class="info"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div><br>
+                                                </div>
+                                            </td>
+                                            <td style="width: 50%; border: none;">
+                                                <div class="info-line">
+                                                    <div class="title">Problem</div>
+                                                    <div class="info">{{ ticket?.problem_name }}</div>
+                                                    <div *ngIf="ticketLoading" class="info"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div><br>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border: none;">
+                                                <div class="info-line">
+                                                    <div class="title">Details</div>
+                                                    <div class="info">{{ ticket?.details }}</div>
+                                                    <div *ngIf="ticketLoading" class="info"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div><br>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border: none;">
+                                                <div class="info-line">
+                                                    <div class="title">Assign Engineer</div>
+                                                    <div class="info">
+                                                        <mat-form-field *ngIf="!ticket?.engineer_id && !loadingEngineer" style="width: 85%;" appearance="">
+                                                            <mat-label>Engineer</mat-label>
+                                                            <mat-select (selectionChange)="onAssignEngineerChange($event, ticket?.id)">
+                                                                <mat-option *ngIf="loadingEngineer" disabled><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></mat-option>
+                                                                <mat-option *ngIf="failedEngineer" disabled>Failed to load</mat-option>
+                                                                <mat-option *ngFor="let e of engineers" [value]="e.id">
+                                                                    {{e.name}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="info" *ngIf="ticket?.engineer_id && !loadingEngineer">
+                                                        {{ ticket?.engineer_name }}
+                                                    </div>
+                                                    <div *ngIf="loadingEngineer" class="info"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div><br>
+                                                </div>
+                                            </td>
+                                            <td style="width: 50%; border: none; vertical-align:top;">
+                                                <div class="info-line">
+                                                    <div class="title">Status</div>
+                                                    <div class="info" *ngIf="(ticket?.status == 0 || !ticket?.status) && !ticketLoading" style="color: red;">Not Assigned</div>
+                                                    <div class="info" *ngIf="ticket?.status == 1 && !ticketLoading" style="color: gold;">Assigned</div>
+                                                    <div class="info" *ngIf="ticket?.status == 2 && !ticketLoading" style="color: red;">Reassign Request</div>
+                                                    <div class="info" *ngIf="ticket?.status == 3 && !ticketLoading" style="color: green;">Completed</div>
+                                                    <div *ngIf="ticketLoading" class="info"><app-loading style="justify-content: start; display: flex;" [text]="'Loading'"></app-loading></div><br>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                    
+                            </div>
+
+                        </div>
+                    
+                    </div>
+
+                </mat-tab>
+
+            </mat-tab-group>
+
+        </div>
+           
+    </div>
+    <!-- / CENTER -->
+</div>
+<div class="overlay" *ngIf="loading">
+    <div class="spinner">
+      <mat-spinner color="accent"></mat-spinner>
+    </div>
+</div>

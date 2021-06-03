@@ -1,3 +1,4 @@
+import { ComplaintDetailsModule } from './main/complaint-details/complaint-details.module';
 import { ViewClientModule } from './main/view-client/view-client.module';
 import { EngineerModule } from './main/engineer/engineer.module';
 import { ComplaintModule } from './main/complaint/complaint.module';
@@ -76,7 +77,8 @@ const appRoutes: Routes = [
         ComplaintModule,
         EngineerModule,
         ProblemModule,
-        ViewClientModule
+        ViewClientModule,
+        ComplaintDetailsModule
     ],
     providers   : [
         AuthGuardService,

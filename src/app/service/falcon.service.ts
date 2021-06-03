@@ -175,6 +175,21 @@ export class FalconService {
         return this.http.delete(this.url + 'clientProduct/deleteById/' + id);
     }
 
+    getUnassignedTicket(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'ticket/getUnassignedTicket/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
+    getAssignedTicket(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'ticket/getAssignedTicket/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
+    getCompletedTicket(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'ticket/getCompletedTicket/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
     getAllTicket(search, orderBy, order, offset){
         var userId = localStorage.getItem('userId');
         return this.http.get(this.url + 'ticket/getAll/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
@@ -183,6 +198,10 @@ export class FalconService {
     getTicket(cid){
         var userId = localStorage.getItem('userId');
         return this.http.get(this.url + 'ticket/getByClient/' + userId + '/' + cid);
+    }
+
+    getTicketById(id){
+        return this.http.get(this.url + 'ticket/getById/' + id);
     }
 
     addTicket(data){
