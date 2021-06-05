@@ -19,6 +19,7 @@ import { forkJoin } from 'rxjs';
 export class ComplaintComponent implements OnInit {
 
     currentTab = 'Unassigned';
+    loading: boolean = false;
 
     unassignedTicketsLoading: boolean = true;
     unassignedTicketsFailed: boolean = false;
@@ -116,8 +117,30 @@ export class ComplaintComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if(result != 0){
+                this.unassignedTicketsLoading = true;
+                this.unassignedTickets.length = 0;
+                this.unassignedTicketsOffset = 0;
+                this.unassignedTicketsInfiniteScrollLoading = false;
+                this.unassignedTicketsIsInfiniteScrollDisabled = false;
+                this.assignedTicketsLoading = true;
+                this.assignedTickets.length = 0;
+                this.assignedTicketsOffset = 0;
+                this.assignedTicketsInfiniteScrollLoading = false;
+                this.assignedTicketsIsInfiniteScrollDisabled = false;
+                this.completedTicketsLoading = true;
+                this.completedTickets.length = 0;
+                this.completedTicketsOffset = 0;
+                this.completedTicketsInfiniteScrollLoading = false;
+                this.completedTicketsIsInfiniteScrollDisabled = false;
+                this.allTicketsLoading = true;
                 this.allTickets.length = 0;
-                this.allTicketResetFilters();
+                this.allTicketsOffset = 0;
+                this.allTicketsInfiniteScrollLoading = false;
+                this.allTicketsIsInfiniteScrollDisabled = false;
+                this.getUnassignedTickets();
+                this.getAssignedTickets();
+                this.getCompletedTickets();
+                this.getAllTickets();
             }
         });
     }
@@ -130,36 +153,60 @@ export class ComplaintComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if(result == 1){
-                this.allTicketsLoading = true;
+                this.loading = true;
                 this.falconService.deleteTicket(id)
                 .subscribe((result: any) => {
                     this.openSnackBar('Ticket Deleted');
-                    this.allTickets.splice(index, 1);
-                    this.allTicketsLoading = false;
+                    this.unassignedTickets.forEach((element,index)=>{
+                        if(element.id == id) this.unassignedTickets.splice(index,1);
+                    });
+                     this.assignedTickets.forEach((element,index)=>{
+                        if(element.id == id) this.assignedTickets.splice(index,1);
+                    });
+                     this.completedTickets.forEach((element,index)=>{
+                        if(element.id == id) this.completedTickets.splice(index,1);
+                    });
+                    this.allTickets.forEach((element,index)=>{
+                        if(element.id == id) this.allTickets.splice(index,1);
+                    });
+                    this.loading = false;
                 },
                 (error) => {
                     this.openSnackBar('Failed to Delete');
-                    this.allTicketsLoading = false;
+                    this.loading = false;
                 });
             }
         });
     }
 
-    ticketComplete(index){
-        this.allTicketsLoading = true;
+    ticketComplete(id){
+        this.loading = true;
         let data = {
-            'id': index,
+            'id': id,
             'status': 3
         };
         this.falconService.changeStatus(data)
         .subscribe((result) => {
-            this.allTicketResetFilters();
-            // this.getAllTickets();
+            this.assignedTickets.forEach((element,index)=>{
+                if(element.id == id) this.assignedTickets.splice(index,1);
+            });
+            this.allTickets.forEach((element,index)=>{
+                if(element.id == id) 
+                {
+                    this.allTickets[index].status = 3;
+                }
+            });
+            this.completedTicketsLoading = true;
+            this.completedTickets.length = 0;
+            this.completedTicketsOffset = 0;
+            this.completedTicketsInfiniteScrollLoading = false;
+            this.completedTicketsIsInfiniteScrollDisabled = false;
+            this.getCompletedTickets();
             this.openSnackBar('Status updated successfuly');
-            this.allTicketsLoading = false;
+            this.loading = false;
         },
         (error) => {
-            this.allTicketsLoading = false;
+            this.loading = false;
             this.openSnackBar('Failed to update successfuly');
         });
     }
@@ -204,43 +251,58 @@ export class ComplaintComponent implements OnInit {
     }
 
     unassignedTicketResetFilters(){
-        this.unassignedTicketsLoading = true;
-        this.unassignedTickets.length = 0;
-        this.unassignedTicketsSearch = '';
-        this.unassignedTicketsOrderBy = 'tickets.id';
-        this.unassignedTicketsOrder = 'desc';
-        this.unassignedTicketsOffset = null;
-        this.unassignedTicketsTotalRows = null;
-        this.getUnassignedTickets();
+        if(!this.unassignedTicketsLoading){
+            this.unassignedTicketsLoading = true;
+            this.unassignedTickets.length = 0;
+            this.unassignedTicketsSearch = '';
+            this.unassignedTicketsOrderBy = 'tickets.id';
+            this.unassignedTicketsOrder = 'desc';
+            this.unassignedTicketsOffset = null;
+            this.unassignedTicketsTotalRows = null;
+            this.getUnassignedTickets();
+        }
+        else{
+            this.openSnackBar("Can't reset while loading");
+        }
     }
 
     unassignedTicketOnSearch(search){
-        this.unassignedTicketsLoading = true;
-        this.unassignedTickets.length = 0;
-        this.unassignedTicketsSearch = search;
-        this.unassignedTicketsOffset = null;
-        this.unassignedTicketsTotalRows = null;
-        this.getUnassignedTickets();
+        if(!this.unassignedTicketsLoading){
+            this.unassignedTicketsLoading = true;
+            this.unassignedTickets.length = 0;
+            this.unassignedTicketsSearch = search;
+            this.unassignedTicketsOffset = null;
+            this.unassignedTicketsTotalRows = null;
+            this.getUnassignedTickets();
+        }
+        else{
+            this.openSnackBar("Can't search while loading");
+        }        
     }
 
     unassignedTicketOnColumnSort(columnName){
-        this.unassignedTicketsLoading = true;
-        this.unassignedTickets.length = 0;
-        this.unassignedTicketsOffset = null;
-        this.unassignedTicketsTotalRows = null;
-        if(this.unassignedTicketsOrderBy == columnName){
-            if(this.unassignedTicketsOrder == 'asc'){
-                this.unassignedTicketsOrder = 'desc';
+        if(!this.unassignedTicketsLoading){
+            this.unassignedTicketsLoading = true;
+            this.unassignedTickets.length = 0;
+            this.unassignedTicketsOffset = null;
+            this.unassignedTicketsTotalRows = null;
+            if(this.unassignedTicketsOrderBy == columnName){
+                if(this.unassignedTicketsOrder == 'asc'){
+                    this.unassignedTicketsOrder = 'desc';
+                }
+                else{
+                    this.unassignedTicketsOrder = 'asc';
+                }
             }
             else{
                 this.unassignedTicketsOrder = 'asc';
             }
+            this.unassignedTicketsOrderBy = columnName;
+            this.getUnassignedTickets();
         }
         else{
-            this.unassignedTicketsOrder = 'asc';
+            this.openSnackBar("Can't sort while loading");
         }
-        this.unassignedTicketsOrderBy = columnName;
-        this.getUnassignedTickets();
     }
 
     unassignedTicketOnScroll(){
@@ -285,43 +347,58 @@ export class ComplaintComponent implements OnInit {
     }
 
     assignedTicketResetFilters(){
-        this.assignedTicketsLoading = true;
-        this.assignedTickets.length = 0;
-        this.assignedTicketsSearch = '';
-        this.assignedTicketsOrderBy = 'tickets.id';
-        this.assignedTicketsOrder = 'desc';
-        this.assignedTicketsOffset = null;
-        this.assignedTicketsTotalRows = null;
-        this.getAssignedTickets();
+        if(!this.assignedTicketsLoading){
+            this.assignedTicketsLoading = true;
+            this.assignedTickets.length = 0;
+            this.assignedTicketsSearch = '';
+            this.assignedTicketsOrderBy = 'tickets.id';
+            this.assignedTicketsOrder = 'desc';
+            this.assignedTicketsOffset = null;
+            this.assignedTicketsTotalRows = null;
+            this.getAssignedTickets();
+        }
+        else{
+            this.openSnackBar("Can't reset while loading");
+        }
     }
 
     assignedTicketOnSearch(search){
-        this.assignedTicketsLoading = true;
-        this.assignedTickets.length = 0;
-        this.assignedTicketsSearch = search;
-        this.assignedTicketsOffset = null;
-        this.assignedTicketsTotalRows = null;
-        this.getAssignedTickets();
+        if(!this.assignedTicketsLoading){
+            this.assignedTicketsLoading = true;
+            this.assignedTickets.length = 0;
+            this.assignedTicketsSearch = search;
+            this.assignedTicketsOffset = null;
+            this.assignedTicketsTotalRows = null;
+            this.getAssignedTickets();
+        }
+        else{
+            this.openSnackBar("Can't search while loading");
+        }
     }
 
     assignedTicketOnColumnSort(columnName){
-        this.assignedTicketsLoading = true;
-        this.assignedTickets.length = 0;
-        this.assignedTicketsOffset = null;
-        this.assignedTicketsTotalRows = null;
-        if(this.assignedTicketsOrderBy == columnName){
-            if(this.assignedTicketsOrder == 'asc'){
-                this.assignedTicketsOrder = 'desc';
+        if(!this.assignedTicketsLoading){
+            this.assignedTicketsLoading = true;
+            this.assignedTickets.length = 0;
+            this.assignedTicketsOffset = null;
+            this.assignedTicketsTotalRows = null;
+            if(this.assignedTicketsOrderBy == columnName){
+                if(this.assignedTicketsOrder == 'asc'){
+                    this.assignedTicketsOrder = 'desc';
+                }
+                else{
+                    this.assignedTicketsOrder = 'asc';
+                }
             }
             else{
                 this.assignedTicketsOrder = 'asc';
             }
+            this.assignedTicketsOrderBy = columnName;
+            this.getAssignedTickets();
         }
         else{
-            this.assignedTicketsOrder = 'asc';
+            this.openSnackBar("Can't sort while loading");
         }
-        this.assignedTicketsOrderBy = columnName;
-        this.getAssignedTickets();
     }
 
     assignedTicketOnScroll(){
@@ -366,43 +443,58 @@ export class ComplaintComponent implements OnInit {
     }
 
     completedTicketResetFilters(){
-        this.completedTicketsLoading = true;
-        this.completedTickets.length = 0;
-        this.completedTicketsSearch = '';
-        this.completedTicketsOrderBy = 'tickets.id';
-        this.completedTicketsOrder = 'desc';
-        this.completedTicketsOffset = null;
-        this.completedTicketsTotalRows = null;
-        this.getCompletedTickets();
+        if(!this.completedTicketsLoading){
+            this.completedTicketsLoading = true;
+            this.completedTickets.length = 0;
+            this.completedTicketsSearch = '';
+            this.completedTicketsOrderBy = 'tickets.id';
+            this.completedTicketsOrder = 'desc';
+            this.completedTicketsOffset = null;
+            this.completedTicketsTotalRows = null;
+            this.getCompletedTickets();
+        }
+        else{
+            this.openSnackBar("Can't reset while loading");
+        }
     }
 
     completedTicketOnSearch(search){
-        this.completedTicketsLoading = true;
-        this.completedTickets.length = 0;
-        this.completedTicketsSearch = search;
-        this.completedTicketsOffset = null;
-        this.completedTicketsTotalRows = null;
-        this.getCompletedTickets();
+        if(!this.completedTicketsLoading){
+            this.completedTicketsLoading = true;
+            this.completedTickets.length = 0;
+            this.completedTicketsSearch = search;
+            this.completedTicketsOffset = null;
+            this.completedTicketsTotalRows = null;
+            this.getCompletedTickets();
+        }
+        else{
+            this.openSnackBar("Can't search while loading");
+        }
     }
 
     completedTicketOnColumnSort(columnName){
-        this.completedTicketsLoading = true;
-        this.completedTickets.length = 0;
-        this.completedTicketsOffset = null;
-        this.completedTicketsTotalRows = null;
-        if(this.completedTicketsOrderBy == columnName){
-            if(this.completedTicketsOrder == 'asc'){
-                this.completedTicketsOrder = 'desc';
+        if(!this.completedTicketsLoading){
+            this.completedTicketsLoading = true;
+            this.completedTickets.length = 0;
+            this.completedTicketsOffset = null;
+            this.completedTicketsTotalRows = null;
+            if(this.completedTicketsOrderBy == columnName){
+                if(this.completedTicketsOrder == 'asc'){
+                    this.completedTicketsOrder = 'desc';
+                }
+                else{
+                    this.completedTicketsOrder = 'asc';
+                }
             }
             else{
                 this.completedTicketsOrder = 'asc';
             }
+            this.completedTicketsOrderBy = columnName;
+            this.getCompletedTickets();
         }
         else{
-            this.completedTicketsOrder = 'asc';
+            this.openSnackBar("Can't sort while loading");
         }
-        this.completedTicketsOrderBy = columnName;
-        this.getCompletedTickets();
     }
 
     completedTicketOnScroll(){
@@ -447,43 +539,58 @@ export class ComplaintComponent implements OnInit {
     }
 
     allTicketResetFilters(){
-        this.allTicketsLoading = true;
-        this.allTickets.length = 0;
-        this.allTicketsSearch = '';
-        this.allTicketsOrderBy = 'tickets.id';
-        this.allTicketsOrder = 'desc';
-        this.allTicketsOffset = null;
-        this.allTicketsTotalRows = null;
-        this.getAllTickets();
+        if(!this.allTicketsLoading){
+            this.allTicketsLoading = true;
+            this.allTickets.length = 0;
+            this.allTicketsSearch = '';
+            this.allTicketsOrderBy = 'tickets.id';
+            this.allTicketsOrder = 'desc';
+            this.allTicketsOffset = null;
+            this.allTicketsTotalRows = null;
+            this.getAllTickets();
+        }
+        else{
+            this.openSnackBar("Can't reset while loading");
+        }
     }
 
     allTicketOnSearch(search){
-        this.allTicketsLoading = true;
-        this.allTickets.length = 0;
-        this.allTicketsSearch = search;
-        this.allTicketsOffset = null;
-        this.allTicketsTotalRows = null;
-        this.getAllTickets();
+        if(!this.allTicketsLoading){
+            this.allTicketsLoading = true;
+            this.allTickets.length = 0;
+            this.allTicketsSearch = search;
+            this.allTicketsOffset = null;
+            this.allTicketsTotalRows = null;
+            this.getAllTickets();
+        }
+        else{
+            this.openSnackBar("Can't search while loading");
+        }
     }
 
     allTicketOnColumnSort(columnName){
-        this.allTicketsLoading = true;
-        this.allTickets.length = 0;
-        this.allTicketsOffset = null;
-        this.allTicketsTotalRows = null;
-        if(this.allTicketsOrderBy == columnName){
-            if(this.allTicketsOrder == 'asc'){
-                this.allTicketsOrder = 'desc';
+        if(!this.allTicketsLoading){
+            this.allTicketsLoading = true;
+            this.allTickets.length = 0;
+            this.allTicketsOffset = null;
+            this.allTicketsTotalRows = null;
+            if(this.allTicketsOrderBy == columnName){
+                if(this.allTicketsOrder == 'asc'){
+                    this.allTicketsOrder = 'desc';
+                }
+                else{
+                    this.allTicketsOrder = 'asc';
+                }
             }
             else{
                 this.allTicketsOrder = 'asc';
             }
+            this.allTicketsOrderBy = columnName;
+            this.getAllTickets();
         }
         else{
-            this.allTicketsOrder = 'asc';
+            this.openSnackBar("Can't sort while loading");
         }
-        this.allTicketsOrderBy = columnName;
-        this.getAllTickets();
     }
 
     allTicketOnScroll(){

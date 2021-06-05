@@ -19,6 +19,8 @@ import { navigation } from 'app/navigation/navigation';
 
 export class ToolbarComponent implements OnInit, OnDestroy
 {
+    orgName = localStorage.getItem('orgName');
+
     horizontalNavbar: boolean;
     rightNavbar: boolean;
     hiddenNavbar: boolean;

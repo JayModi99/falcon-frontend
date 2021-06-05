@@ -4,7 +4,7 @@ import { Component, HostListener, Inject, OnInit, ViewEncapsulation } from '@ang
 import { fuseAnimations } from '@fuse/animations';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { DeleteDialog } from '../dialog/delete-dialog/delete-dialog.component';
 
@@ -27,7 +27,15 @@ export class ProductCategoryComponent implements OnInit {
     dataLoading: boolean = true;
     loading: boolean = false;
     failed: boolean = false;
-    productCategory: any;
+
+    productCategory: any = [];
+    search = '';
+    orderBy = 'id';
+    order = 'asc';
+    offset = 0;
+    totalRows: number;
+    infiniteScrollLoading: boolean = false;
+    isInfiniteScrollDisabled: boolean = false;
 
     constructor(
         private titleService: Title,
@@ -40,35 +48,86 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     ngOnInit(){
-        this.productCategory = JSON.parse(window.localStorage.getItem('productCategory'));
+        // this.productCategory = JSON.parse(window.localStorage.getItem('productCategory'));
         this.getProductCategory();
      }
 
     @HostListener('window:storage', ['$event'])
     onStorageChange(event) {
         if(event.key == 'productCategory' && this.productCategory != event.newValue){
-            this.productCategory = JSON.parse(event.newValue);
+            // this.productCategory = JSON.parse(event.newValue);
+            this.productCategory = null;
+            this.getProductCategory();
         }    
     }
 
     getProductCategory(){
+        if(this.productCategory != null && this.productCategory != ''){
+            this.openSnackBar('Refreshing...', '', 0, 'right', 'bottom');
+        }
         this.dataLoading = true;
         this.failed = false;
-        this.falconService.getProductCategory()
-        .subscribe((result) => {
-            this.dataLoading = false;
-            if(result != JSON.parse(window.localStorage.getItem('productCategory')))
-            {
-                this.productCategory = result;
-                localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
+        var s;
+        if(this.search == ''){
+            s = 'null';
+            this.search = null;
+        }
+        else{
+            s = this.search;
+        }
+        this.falconService.getAllProductCategoryByFilters(s, this.orderBy, this.order, this.offset)
+        .subscribe((result:any) => {
+            result.data.forEach(element => {
+                this.productCategory.push(element);
+            });
+            this.totalRows = result.totalRows;
+            this.offset += result.data.length;
+            this.isInfiniteScrollDisabled = false;
+            if(this.offset >= result.totalRows){
+                this.isInfiniteScrollDisabled = true;
             }
+            this.infiniteScrollLoading = false;
+            // if(result.data != JSON.parse(window.localStorage.getItem('productCategory')))
+            // {
+            //     this.productCategory = result;
+            //     localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
+            // }
+            this.dataLoading = false;
+            this.snackBar.dismiss();
         },
         (error) => {
-            this.openSnackBar('Failed to load');
+            this.snackBar.dismiss();
+            this.openSnackBar('Failed to load', 'Close', 3000, 'center', 'bottom');
             this.dataLoading = false;
             this.failed = true;
+            this.infiniteScrollLoading = false;
         });
     }
+
+    // getProductCategory(){
+    //     if(this.productCategory != null && this.productCategory != ''){
+    //         this.openSnackBar('Refreshing...', '', 0, 'right', 'bottom');
+    //     }
+    //     this.dataLoading = true;
+    //     this.failed = false;
+    //     this.falconService.getProductCategory()
+    //     .subscribe((result) => {
+    //         console.log('done');
+    //         this.dataLoading = false;
+    //         this.snackBar.dismiss();
+    //         if(result != JSON.parse(window.localStorage.getItem('productCategory')))
+    //         {
+    //             this.productCategory = result;
+    //             localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
+    //         }
+    //     },
+    //     (error) => {
+    //         this.snackBar.dismiss();
+    //         this.openSnackBar('Failed to load', 'Close', 3000, 'center', 'bottom');
+    //         this.dataLoading = false;
+    //         this.failed = true;
+    //     });
+    // }
 
     openAddDialog(type, id, product_category, description) {
         const dialogRef = this.dialog.open(AddProductCategoryDialog, {
@@ -84,7 +143,11 @@ export class ProductCategoryComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe(result => {
             if(result != 0){
-                this.productCategory = null;
+                this.offset = 0;
+                this.infiniteScrollLoading = false;
+                this.isInfiniteScrollDisabled = false;
+                this.productCategory = [];
+                localStorage.removeItem('productCategory');
                 this.getProductCategory();
             }
         });
@@ -102,27 +165,98 @@ export class ProductCategoryComponent implements OnInit {
                 this.falconService.deleteProductCategory(id)
                 .subscribe((result) => {
                     if(result == 'Products are linked'){
-                        this.openSnackBar('Products are linked');
+                        this.openSnackBar('Products are linked', 'Close', 3000, 'center', 'bottom');
                         this.loading = false;
                     }
                     else{
-                        this.openSnackBar('Product Category Deleted');
+                        this.openSnackBar('Product Category Deleted', 'Close', 3000, 'center', 'bottom');
                         this.loading = false;
                         this.productCategory.splice(index, 1);
                         localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
                     }
                 },
                 (error) => {
-                    this.openSnackBar('Failed to Delete');
+                    this.openSnackBar('Failed to Delete', 'Close', 3000, 'center', 'bottom');
                     this.loading = false;
                 });
             }
         });
     }
 
-    openSnackBar(message: string) {
-        this.snackBar.open(message, 'Close', {
-          duration: 3000,
+    resetFilters(){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.productCategory = [];
+            this.search = '';
+            this.orderBy = 'id';
+            this.order = 'asc';
+            this.offset = null;
+            this.totalRows = null;
+            this.getProductCategory();
+        }
+        else{
+            this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onSearch(search){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.productCategory = [];
+            this.search = search;
+            this.offset = null;
+            this.totalRows = null;
+            this.getProductCategory();
+        }
+        else{
+            this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onColumnSort(columnName){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.productCategory = [];
+            this.offset = null;
+            this.totalRows = null;
+            if(this.orderBy == columnName){
+                if(this.order == 'asc'){
+                    this.order = 'desc';
+                }
+                else{
+                    this.order = 'asc';
+                }
+            }
+            else{
+                this.order = 'asc';
+            }
+            this.orderBy = columnName;
+            this.getProductCategory();
+        }
+        else{
+            this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onScroll(){
+        if(this.isInfiniteScrollDisabled == false){
+            this.isInfiniteScrollDisabled = true;
+            this.infiniteScrollLoading = true;
+            this.getProductCategory();
+        }
+    }
+
+    // openSnackBar(message: string) {
+    //     this.snackBar.open(message, 'Close', {
+    //       duration: 3000,
+    //     });
+    // }
+
+    openSnackBar(message, close, duration, horizontalPosition: MatSnackBarHorizontalPosition, verticalPosition: MatSnackBarVerticalPosition) {
+        this.snackBar.open(message, close, {
+            duration: duration,
+            horizontalPosition: horizontalPosition,
+            verticalPosition: verticalPosition,
         });
     }
 }

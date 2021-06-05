@@ -45,6 +45,11 @@ export class FalconService {
         return this.http.get(this.url + 'productCategory/getAll/' + userId);
     }
 
+    getAllProductCategoryByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'productCategory/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
     addProductCategory(data){
         return this.http.post(this.url + 'productCategory/save', data);
     }

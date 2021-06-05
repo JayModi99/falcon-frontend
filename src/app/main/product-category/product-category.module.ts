@@ -1,3 +1,4 @@
+import { ComplaintModule } from './../complaint/complaint.module';
 import { NgModule } from '@angular/core';
 import { ProductCategoryComponent, AddProductCategoryDialog } from './product-category.component';
 import { RouterModule } from '@angular/router';
@@ -13,7 +14,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { FuseWidgetModule } from '@fuse/components';
-
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -35,9 +36,11 @@ import { FuseWidgetModule } from '@fuse/components';
     MatDividerModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    InfiniteScrollModule,
 
     FuseSharedModule,
-    FuseWidgetModule
+    FuseWidgetModule,
+    ComplaintModule
   ],
   exports     : [
       ProductCategoryComponent,

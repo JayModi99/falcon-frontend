@@ -94,6 +94,8 @@ export class LoginComponent implements OnInit {
                 var userId = result[0].id;
                 //var userId = this.encryptDecryptService.encryptData(result[0].id);
                 localStorage.setItem('userId', userId);
+                localStorage.setItem('orgName', result[0].organisation_name);
+                localStorage.setItem('orgEmail', result[0].email);
                 this.openSnackBar('Login Successful');
                 this.router.navigate(['product-category']);
             }

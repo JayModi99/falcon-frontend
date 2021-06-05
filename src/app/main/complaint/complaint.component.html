@@ -57,293 +57,328 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card" style="overflow-y: auto;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="allTicketsIsInfiniteScrollDisabled" (scrolled)="allTicketOnScroll()">
+        <div class="content-card">
 
-            <mat-tab-group dynamicHeight="true" color="accent" (selectedTabChange)="onTabChange($event.tab.textLabel)">
+            <div class="content">
 
-                <mat-tab label="Unassigned">
-                    
-                    <table class="simple" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>
-                                    <span (click)="unassignedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer;">Client</span>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="unassignedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer;">Product</span>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="unassignedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer;">Problem</span>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="unassignedTicketOnColumnSort('tickets.details')" style="cursor: pointer;">Details</span>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="unassignedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngIf="unassignedTicketsLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="unassignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
-                            </tr>
-                            <tr *ngIf="tickets == '' && !unassignedTicketsLoading && !unassignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
-                            </tr>
-                            <tr *ngFor="let uT of unassignedTickets; let i = index">
-                                <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ i+1 }}</td>
-                                <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.organisation_name }}</td>
-                                <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.product_category }} {{ uT.name }}</td>
-                                <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.problem_name }}</td>
-                                <td class="details" (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.details }}</td>
-                                <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">
-                                    <p *ngIf="uT.status == 0 || !uT.status" style="color: red">Not Assigned</p>
-                                    <p *ngIf="uT.status == 1" style="color: gold">Assigned</p>
-                                    <p *ngIf="uT.status == 2" style="color: red">Reassign Request</p>
-                                    <p *ngIf="uT.status == 3" style="color: green">Completed</p>
-                                </td>
-                                <td style="white-space: nowrap;">
-                                    <button *ngIf="uT.status != 3" (click)="openTicketAddDialog('Edit', uT.id, aT, uT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
-                                    <button *ngIf="uT.status != 3" (click)="deleteTicket(uT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
-                                    <button *ngIf="uT.status != 3" (click)="ticketComplete(uT.id)" [disabled]="uT.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="unassignedTicketsInfiniteScrollLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="tickets != '' && unassignedTicketsOffset >= unassignedTicketsTotalRows && !unassignedTicketsLoading && !unassignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    No more records to show
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <mat-tab-group fxLayout="column" fxFlex color="accent" (selectedTabChange)="onTabChange($event.tab.textLabel)">
 
-                </mat-tab>
+                    <mat-tab label="Unassigned">
 
-                <mat-tab label="Assigned">
-                    
-                    <table class="simple" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>
-                                    <span (click)="assignedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer;">Client</span>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="assignedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer;">Product</span>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="assignedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer;">Problem</span>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="assignedTicketOnColumnSort('tickets.details')" style="cursor: pointer;">Details</span>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="assignedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngIf="assignedTicketsLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="assignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
-                            </tr>
-                            <tr *ngIf="tickets == '' && !assignedTicketsLoading && !assignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
-                            </tr>
-                            <tr *ngFor="let assT of assignedTickets; let i = index">
-                                <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ i+1 }}</td>
-                                <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.organisation_name }}</td>
-                                <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.product_category }} {{ assT.name }}</td>
-                                <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.problem_name }}</td>
-                                <td class="details" (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.details }}</td>
-                                <td style="white-space: nowrap;">
-                                    <button *ngIf="assT.status != 3" (click)="openTicketAddDialog('Edit', assT.id, aT, assT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
-                                    <button *ngIf="assT.status != 3" (click)="deleteTicket(assT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
-                                    <button *ngIf="assT.status != 3" (click)="ticketComplete(assT.id)" [disabled]="assT.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="assignedTicketsInfiniteScrollLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="tickets != '' && assignedTicketsOffset >= assignedTicketsTotalRows && !assignedTicketsLoading && !assignedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    No more records to show
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <div style="overflow-y: auto; height: 100%;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="unassignedTicketsIsInfiniteScrollDisabled" (scrolled)="unassignedTicketOnScroll()">
+                        
+                            <table class="simple" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>
+                                            <span (click)="unassignedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer; vertical-align: top;">Client</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('clients.organisation_name')" *ngIf="unassignedTicketsOrderBy == 'clients.organisation_name' && unassignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('clients.organisation_name')" *ngIf="unassignedTicketsOrderBy == 'clients.organisation_name' && unassignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="unassignedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer; vertical-align: top;">Product</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('product_categories.product_category')" *ngIf="unassignedTicketsOrderBy == 'product_categories.product_category' && unassignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('product_categories.product_category')" *ngIf="unassignedTicketsOrderBy == 'product_categories.product_category' && unassignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="unassignedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer; vertical-align: top;">Problem</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('problems.problem_name')" *ngIf="unassignedTicketsOrderBy == 'problems.problem_name' && unassignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('problems.problem_name')" *ngIf="unassignedTicketsOrderBy == 'problems.problem_name' && unassignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="unassignedTicketOnColumnSort('tickets.details')" style="cursor: pointer; vertical-align: top;">Details</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('tickets.details')" *ngIf="unassignedTicketsOrderBy == 'tickets.details' && unassignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="unassignedTicketOnColumnSort('tickets.details')" *ngIf="unassignedTicketsOrderBy == 'tickets.details' && unassignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="unassignedTicketsLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="unassignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                    </tr>
+                                    <tr *ngIf="tickets == '' && !unassignedTicketsLoading && !unassignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
+                                    </tr>
+                                    <tr *ngFor="let uT of unassignedTickets; let i = index">
+                                        <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ i+1 }}</td>
+                                        <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.organisation_name }}</td>
+                                        <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.product_category }} {{ uT.name }}</td>
+                                        <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.problem_name }}</td>
+                                        <td class="details" (click)="openTicketDetail(uT.id)" style="cursor: pointer;">{{ uT.details }}</td>
+                                        <td (click)="openTicketDetail(uT.id)" style="cursor: pointer;">
+                                            <p *ngIf="uT.status == 0 || !uT.status" style="color: red">Not Assigned</p>
+                                            <p *ngIf="uT.status == 1" style="color: gold">Assigned</p>
+                                            <p *ngIf="uT.status == 2" style="color: red">Reassign Request</p>
+                                            <p *ngIf="uT.status == 3" style="color: green">Completed</p>
+                                        </td>
+                                        <td style="white-space: nowrap;">
+                                            <button *ngIf="uT.status != 3" (click)="openTicketAddDialog('Edit', uT.id, uT, uT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
+                                            <button *ngIf="uT.status != 3" (click)="deleteTicket(uT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="unassignedTicketsInfiniteScrollLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && unassignedTicketsOffset >= unassignedTicketsTotalRows && !unassignedTicketsLoading && !unassignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            No more records to show
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                </mat-tab>
+                        </div>
 
-                <mat-tab label="Completed">
-                    
-                    <table class="simple" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>
-                                    <span (click)="completedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer;">Client</span>
-                                    <mat-icon (click)="completedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="completedTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="completedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer;">Product</span>
-                                    <mat-icon (click)="completedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="completedTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="completedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer;">Problem</span>
-                                    <mat-icon (click)="completedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="completedTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="completedTicketOnColumnSort('tickets.details')" style="cursor: pointer;">Details</span>
-                                    <mat-icon (click)="completedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="completedTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngIf="completedTicketsLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="completedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
-                            </tr>
-                            <tr *ngIf="tickets == '' && !completedTicketsLoading && !completedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
-                            </tr>
-                            <tr *ngFor="let cT of completedTickets; let i = index">
-                                <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ i+1 }}</td>
-                                <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.organisation_name }}</td>
-                                <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.product_category }} {{ cT.name }}</td>
-                                <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.problem_name }}</td>
-                                <td class="details" (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.details }}</td>
-                            </tr>
-                            <tr *ngIf="completedTicketsInfiniteScrollLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="tickets != '' && completedTicketsOffset >= completedTicketsTotalRows && !completedTicketsLoading && !completedTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    No more records to show
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                </mat-tab>
-    
-                <mat-tab label="All">
-                    
-                    <table class="simple" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>
-                                    <span (click)="allTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer;">Client</span>
-                                    <mat-icon (click)="allTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="allTicketOnColumnSort('clients.organisation_name')" *ngIf="orderBy == 'clients.organisation_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="allTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer;">Product</span>
-                                    <mat-icon (click)="allTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="allTicketOnColumnSort('product_categories.product_category')" *ngIf="orderBy == 'product_categories.product_category' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="allTicketOnColumnSort('problems.problem_name')" style="cursor: pointer;">Problem</span>
-                                    <mat-icon (click)="allTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="allTicketOnColumnSort('problems.problem_name')" *ngIf="orderBy == 'problems.problem_name' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>
-                                    <span (click)="allTicketOnColumnSort('tickets.details')" style="cursor: pointer;">Details</span>
-                                    <mat-icon (click)="allTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'asc'" style="float: right; cursor: pointer;">arrow_upward</mat-icon>
-                                    <mat-icon (click)="allTicketOnColumnSort('tickets.details')" *ngIf="orderBy == 'tickets.details' && order == 'desc'" style="float: right; cursor: pointer;">arrow_downward</mat-icon>
-                                </th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngIf="allTicketsLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="allTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
-                            </tr>
-                            <tr *ngIf="tickets == '' && !allTicketsLoading && !allTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
-                            </tr>
-                            <tr *ngFor="let aT of allTickets; let i = index">
-                                <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ i+1 }}</td>
-                                <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.organisation_name }}</td>
-                                <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.product_category }} {{ aT.name }}</td>
-                                <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.problem_name }}</td>
-                                <td class="details" (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.details }}</td>
-                                <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">
-                                    <p *ngIf="aT.status == 0 || !aT.status" style="color: red">Not Assigned</p>
-                                    <p *ngIf="aT.status == 1" style="color: gold">Assigned</p>
-                                    <p *ngIf="aT.status == 2" style="color: red">Reassign Request</p>
-                                    <p *ngIf="aT.status == 3" style="color: green">Completed</p>
-                                </td>
-                                <td style="white-space: nowrap;">
-                                    <button *ngIf="aT.status != 3" (click)="openTicketAddDialog('Edit', aT.id, aT, aT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
-                                    <button *ngIf="aT.status != 3" (click)="deleteTicket(aT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
-                                    <button *ngIf="aT.status != 3" (click)="ticketComplete(aT.id)" [disabled]="aT.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="allTicketsInfiniteScrollLoading">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
-                                </td>
-                            </tr>
-                            <tr *ngIf="tickets != '' && allTicketsOffset >= allTicketsTotalRows && !allTicketsLoading && !allTicketsFailed">
-                                <td colspan="8" style="text-align: center; padding: 15px 0px;">
-                                    No more records to show
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                </mat-tab>
+                    </mat-tab>
 
-            </mat-tab-group>
+                    <mat-tab label="Assigned">
 
-            
+                        <div style="overflow-y: auto; height: 100%;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="assignedTicketsIsInfiniteScrollDisabled" (scrolled)="assignedTicketOnScroll()">
+                        
+                            <table class="simple" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>
+                                            <span (click)="assignedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer; vertical-align: top;">Client</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="assignedTicketOnColumnSort('clients.organisation_name')" *ngIf="assignedTicketsOrderBy == 'clients.organisation_name' && assignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('clients.organisation_name')" *ngIf="assignedTicketsOrderBy == 'clients.organisation_name' && assignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="assignedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer; vertical-align: top;">Product</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="assignedTicketOnColumnSort('product_categories.product_category')" *ngIf="assignedTicketsOrderBy == 'product_categories.product_category' && assignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('product_categories.product_category')" *ngIf="assignedTicketsOrderBy == 'product_categories.product_category' && assignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="assignedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer; vertical-align: top;">Problem</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="assignedTicketOnColumnSort('problems.problem_name')" *ngIf="assignedTicketsOrderBy == 'problems.problem_name' && assignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('problems.problem_name')" *ngIf="assignedTicketsOrderBy == 'problems.problem_name' && assignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="assignedTicketOnColumnSort('tickets.details')" style="cursor: pointer; vertical-align: top;">Details</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="assignedTicketOnColumnSort('tickets.details')" *ngIf="assignedTicketsOrderBy == 'tickets.details' && assignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('tickets.details')" *ngIf="assignedTicketsOrderBy == 'tickets.details' && assignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="assignedTicketOnColumnSort('engineer_name')" style="cursor: pointer; vertical-align: top;">Engineer</span>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('engineer_name')" *ngIf="assignedTicketsOrderBy == 'engineer_name' && assignedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="assignedTicketOnColumnSort('engineer_name')" *ngIf="assignedTicketsOrderBy == 'engineer_name' && assignedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="assignedTicketsLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="assignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                    </tr>
+                                    <tr *ngIf="tickets == '' && !assignedTicketsLoading && !assignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
+                                    </tr>
+                                    <tr *ngFor="let assT of assignedTickets; let i = index">
+                                        <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ i+1 }}</td>
+                                        <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.organisation_name }}</td>
+                                        <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.product_category }} {{ assT.name }}</td>
+                                        <td (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.problem_name }}</td>
+                                        <td class="details" (click)="openTicketDetail(assT.id)" style="cursor: pointer;">{{ assT.details }}</td>
+                                        <td>{{ assT.engineer_name }}</td>
+                                        <td style="white-space: nowrap;">
+                                            <button *ngIf="assT.status != 3" (click)="openTicketAddDialog('Edit', assT.id, assT, assT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
+                                            <button *ngIf="assT.status != 3" (click)="deleteTicket(assT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
+                                            <button *ngIf="assT.status != 3" (click)="ticketComplete(assT.id)" [disabled]="assT.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="assignedTicketsInfiniteScrollLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && assignedTicketsOffset >= assignedTicketsTotalRows && !assignedTicketsLoading && !assignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            No more records to show
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </mat-tab>
+
+                    <mat-tab label="Completed">
+
+                        <div style="overflow-y: auto; height: 100%;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="completeTicketsIsInfiniteScrollDisabled" (scrolled)="completedTicketOnScroll()">
+                        
+                            <table class="simple" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>
+                                            <span (click)="completedTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer; vertical-align: top;">Client</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="completedTicketOnColumnSort('clients.organisation_name')" *ngIf="completedTicketsOrderBy == 'clients.organisation_name' && completedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="completedTicketOnColumnSort('clients.organisation_name')" *ngIf="completedTicketsOrderBy == 'clients.organisation_name' && completedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="completedTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer; vertical-align: top;">Product</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="completedTicketOnColumnSort('product_categories.product_category')" *ngIf="completedTicketsOrderBy == 'product_categories.product_category' && completedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="completedTicketOnColumnSort('product_categories.product_category')" *ngIf="completedTicketsOrderBy == 'product_categories.product_category' && completedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="completedTicketOnColumnSort('problems.problem_name')" style="cursor: pointer; vertical-align: top;">Problem</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="completedTicketOnColumnSort('problems.problem_name')" *ngIf="completedTicketsOrderBy == 'problems.problem_name' && completedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="completedTicketOnColumnSort('problems.problem_name')" *ngIf="completedTicketsOrderBy == 'problems.problem_name' && completedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="completedTicketOnColumnSort('tickets.details')" style="cursor: pointer; vertical-align: top;">Details</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="completedTicketOnColumnSort('tickets.details')" *ngIf="completedTicketsOrderBy == 'tickets.details' && completedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="completedTicketOnColumnSort('tickets.details')" *ngIf="completedTicketsOrderBy == 'tickets.details' && completedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="completedTicketOnColumnSort('engineer_name')" style="cursor: pointer; vertical-align: top;">Engineer</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="completedTicketOnColumnSort('engineer_name')" *ngIf="completedTicketsOrderBy == 'engineer_name' && completedTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="completedTicketOnColumnSort('engineer_name')" *ngIf="completedTicketsOrderBy == 'engineer_name' && completedTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="completedTicketsLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="completedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                    </tr>
+                                    <tr *ngIf="tickets == '' && !completedTicketsLoading && !completedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
+                                    </tr>
+                                    <tr *ngFor="let cT of completedTickets; let i = index">
+                                        <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ i+1 }}</td>
+                                        <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.organisation_name }}</td>
+                                        <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.product_category }} {{ cT.name }}</td>
+                                        <td (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.problem_name }}</td>
+                                        <td class="details" (click)="openTicketDetail(cT.id)" style="cursor: pointer;">{{ cT.details }}</td>
+                                        <td>{{ cT.engineer_name }}</td>
+                                    </tr>
+                                    <tr *ngIf="completedTicketsInfiniteScrollLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && completedTicketsOffset >= completedTicketsTotalRows && !completedTicketsLoading && !completedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            No more records to show
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        
+                    </mat-tab>
+        
+                    <mat-tab label="All">
+
+                        <div style="overflow-y: auto; height: 100%;" infiniteScroll [infiniteScrollDistance]="2" infiniteScrollThrottle="100" [scrollWindow]="false" [infiniteScrollDisabled]="allTicketsIsInfiniteScrollDisabled" (scrolled)="allTicketOnScroll()">
+                        
+                            <table class="simple" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>
+                                            <span (click)="allTicketOnColumnSort('clients.organisation_name')" style="cursor: pointer; vertical-align: top;">Client</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="allTicketOnColumnSort('clients.organisation_name')" *ngIf="allTicketsOrderBy == 'clients.organisation_name' && allTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="allTicketOnColumnSort('clients.organisation_name')" *ngIf="allTicketsOrderBy == 'clients.organisation_name' && allTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="allTicketOnColumnSort('product_categories.product_category')" style="cursor: pointer; vertical-align: top;">Product</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="allTicketOnColumnSort('product_categories.product_category')" *ngIf="allTicketsOrderBy == 'product_categories.product_category' && allTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="allTicketOnColumnSort('product_categories.product_category')" *ngIf="allTicketsOrderBy == 'product_categories.product_category' && allTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="allTicketOnColumnSort('problems.problem_name')" style="cursor: pointer; vertical-align: top;">Problem</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="allTicketOnColumnSort('problems.problem_name')" *ngIf="allTicketsOrderBy == 'problems.problem_name' && allTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="allTicketOnColumnSort('problems.problem_name')" *ngIf="allTicketsOrderBy == 'problems.problem_name' && allTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="allTicketOnColumnSort('tickets.details')" style="cursor: pointer; vertical-align: top;">Details</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="allTicketOnColumnSort('tickets.details')" *ngIf="allTicketsOrderBy == 'tickets.details' && allTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="allTicketOnColumnSort('tickets.details')" *ngIf="allTicketsOrderBy == 'tickets.details' && allTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>
+                                            <span (click)="allTicketOnColumnSort('engineer_name')" style="cursor: pointer; vertical-align: top;">Engineer</span>&nbsp;&nbsp;&nbsp;
+                                            <mat-icon (click)="allTicketOnColumnSort('engineer_name')" *ngIf="allTicketsOrderBy == 'engineer_name' && allTicketsOrder == 'asc'" style="cursor: pointer;">arrow_upward</mat-icon>
+                                            <mat-icon (click)="allTicketOnColumnSort('engineer_name')" *ngIf="allTicketsOrderBy == 'engineer_name' && allTicketsOrder == 'desc'" style="cursor: pointer;">arrow_downward</mat-icon>
+                                        </th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="allTicketsLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="allTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                    </tr>
+                                    <tr *ngIf="tickets == '' && !allTicketsLoading && !allTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
+                                    </tr>
+                                    <tr *ngFor="let aT of allTickets; let i = index">
+                                        <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ i+1 }}</td>
+                                        <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.organisation_name }}</td>
+                                        <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.product_category }} {{ aT.name }}</td>
+                                        <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.problem_name }}</td>
+                                        <td class="details" (click)="openTicketDetail(aT.id)" style="cursor: pointer;">{{ aT.details }}</td>
+                                        <td>{{ aT.engineer_name }}</td>
+                                        <td (click)="openTicketDetail(aT.id)" style="cursor: pointer;">
+                                            <p *ngIf="aT.status == 0 || !aT.status" style="color: red">Not Assigned</p>
+                                            <p *ngIf="aT.status == 1" style="color: gold">Assigned</p>
+                                            <p *ngIf="aT.status == 2" style="color: red">Reassign Request</p>
+                                            <p *ngIf="aT.status == 3" style="color: green">Completed</p>
+                                        </td>
+                                        <td style="white-space: nowrap;">
+                                            <button *ngIf="aT.status != 3" (click)="openTicketAddDialog('Edit', aT.id, aT, aT.client_id)" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>edit</mat-icon></button>
+                                            <button *ngIf="aT.status != 3" (click)="deleteTicket(aT.id, i)" mat-icon-button style="cursor: pointer;" color="warn"><mat-icon>delete</mat-icon></button>
+                                            <button *ngIf="aT.status != 3" (click)="ticketComplete(aT.id)" [disabled]="aT.status != 1" mat-icon-button style="cursor: pointer;" color="accent"><mat-icon>done</mat-icon></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="allTicketsInfiniteScrollLoading">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && allTicketsOffset >= allTicketsTotalRows && !allTicketsLoading && !allTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            No more records to show
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        
+                    </mat-tab>
+
+                </mat-tab-group>
+
+            </div>
 
         </div>
         <!-- / CONTENT CARD -->
@@ -351,8 +386,8 @@
     <!-- / CENTER -->
 </div>
 
-<!-- <div class="overlay" *ngIf="loading">
+<div class="overlay" *ngIf="loading">
     <div class="spinner">
         <mat-spinner color="accent"></mat-spinner>
     </div>
-</div> -->
+</div>

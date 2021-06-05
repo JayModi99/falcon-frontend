@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy
 
     @HostListener('window:storage', ['$event']) 
     userId(event) {
-        console.log(event);
+        // console.log(event);
         // if(event.key == 'userId'){
         //     if(event.newValue == null){
         //         localStorage.clear();

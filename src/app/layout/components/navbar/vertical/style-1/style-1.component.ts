@@ -16,6 +16,9 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 })
 export class NavbarVerticalStyle1Component implements OnInit, OnDestroy
 {
+    orgName = localStorage.getItem('orgName');
+    orgEmail = localStorage.getItem('orgEmail');
+
     fuseConfig: any;
     navigation: any;
 
