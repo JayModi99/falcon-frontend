@@ -90,6 +90,11 @@
                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
                         </td>
                     </tr>
+                    <tr *ngIf="productCategory != '' && offset < totalRows && !infiniteScrollLoading && !loading && !failed">
+                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                            Scroll to load more data
+                        </td>
+                    </tr>
                     <tr *ngIf="productCategory != '' && offset >= totalRows && !loading && !failed">
                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                             No more records to show

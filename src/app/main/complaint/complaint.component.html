@@ -129,6 +129,11 @@
                                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
                                         </td>
                                     </tr>
+                                    <tr *ngIf="tickets != '' && unassignedTicketsOffset < unassignedTicketsTotalRows && !unassignedTicketsInfiniteScrollLoading && !unassignedTicketsLoading && !unassignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            Scroll to load more data
+                                        </td>
+                                    </tr>
                                     <tr *ngIf="tickets != '' && unassignedTicketsOffset >= unassignedTicketsTotalRows && !unassignedTicketsLoading && !unassignedTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                                             No more records to show
@@ -207,6 +212,11 @@
                                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
                                         </td>
                                     </tr>
+                                    <tr *ngIf="tickets != '' && assignedTicketsOffset < assignedTicketsTotalRows && !assignedTicketsInfiniteScrollLoading && !assignedTicketsLoading && !assignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            Scroll to load more data
+                                        </td>
+                                    </tr>
                                     <tr *ngIf="tickets != '' && assignedTicketsOffset >= assignedTicketsTotalRows && !assignedTicketsLoading && !assignedTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                                             No more records to show
@@ -277,6 +287,11 @@
                                     <tr *ngIf="completedTicketsInfiniteScrollLoading">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && completedTicketsOffset < completedTicketsTotalRows && !completedTicketsInfiniteScrollLoading && !completedTicketsLoading && !completedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            Scroll to load more data
                                         </td>
                                     </tr>
                                     <tr *ngIf="tickets != '' && completedTicketsOffset >= completedTicketsTotalRows && !completedTicketsLoading && !completedTicketsFailed">
@@ -362,6 +377,11 @@
                                     <tr *ngIf="allTicketsInfiniteScrollLoading">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="tickets != '' && allTicketsOffset < unassignedTicketsTotalRows && !unassignedTicketsInfiniteScrollLoading && !unassignedTicketsLoading && !unassignedTicketsFailed">
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">
+                                            Scroll to load more data
                                         </td>
                                     </tr>
                                     <tr *ngIf="tickets != '' && allTicketsOffset >= allTicketsTotalRows && !allTicketsLoading && !allTicketsFailed">

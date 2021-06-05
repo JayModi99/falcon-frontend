@@ -25,6 +25,7 @@ export interface DialogData {
 export class ProductCategoryComponent implements OnInit {
 
     dataLoading: boolean = true;
+    dataRefreshing: boolean = false;
     loading: boolean = false;
     failed: boolean = false;
 
@@ -48,29 +49,38 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     ngOnInit(){
+        // For showing localstorage data while data
         // this.productCategory = JSON.parse(window.localStorage.getItem('productCategory'));
         this.getProductCategory();
-     }
-
-    @HostListener('window:storage', ['$event'])
-    onStorageChange(event) {
-        if(event.key == 'productCategory' && this.productCategory != event.newValue){
-            // this.productCategory = JSON.parse(event.newValue);
-            this.productCategory = null;
-            this.getProductCategory();
-        }    
     }
 
+    // For showing localstorage data while data
+    // @HostListener('window:storage', ['$event'])
+    // onStorageChange(event) {
+    //     if(event.key == 'productCategory'){
+    //         var pC: any = JSON.parse(event.newValue)
+    //         console.log(pC);
+    //         if(this.productCategory != pC){
+    //             this.offset = 0;
+    //             this.infiniteScrollLoading = false;
+    //             this.isInfiniteScrollDisabled = false;
+    //             this.productCategory = [];
+    //             this.getProductCategory();
+    //         }
+    //     }    
+    // }
+
     getProductCategory(){
-        if(this.productCategory != null && this.productCategory != ''){
-            this.openSnackBar('Refreshing...', '', 0, 'right', 'bottom');
-        }
+        // For showing localstorage data while data
+        // if(this.productCategory != null && this.productCategory != '' && !this.infiniteScrollLoading){
+        //     this.dataRefreshing = true;
+        //     this.openSnackBar('Refreshing...', '', 0, 'right', 'bottom');
+        // }
         this.dataLoading = true;
         this.failed = false;
         var s;
         if(this.search == ''){
             s = 'null';
-            this.search = null;
         }
         else{
             s = this.search;
@@ -87,12 +97,17 @@ export class ProductCategoryComponent implements OnInit {
                 this.isInfiniteScrollDisabled = true;
             }
             this.infiniteScrollLoading = false;
-            // if(result.data != JSON.parse(window.localStorage.getItem('productCategory')))
+            // For showing localstorage data while data
+            // var pC: any = JSON.parse(window.localStorage.getItem('productCategory'));
+            // if(pC == null || pC == '' || !pC){
+            //     pC = [];
+            // }
+            // if(this.productCategory != pC && this.search == '' && this.orderBy == 'id' && this.order == 'asc' && this.offset <= 15)
             // {
-            //     this.productCategory = result;
             //     localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
             // }
             this.dataLoading = false;
+            // this.dataRefreshing = false;
             this.snackBar.dismiss();
         },
         (error) => {
@@ -130,61 +145,70 @@ export class ProductCategoryComponent implements OnInit {
     // }
 
     openAddDialog(type, id, product_category, description) {
-        const dialogRef = this.dialog.open(AddProductCategoryDialog, {
-            disableClose: true, 
-            autoFocus: false,
-            data: {
-                type: type,
-                id: id,
-                product_category: product_category,
-                description: description
-            }
-        });
-    
-        dialogRef.afterClosed().subscribe(result => {
-            if(result != 0){
-                this.offset = 0;
-                this.infiniteScrollLoading = false;
-                this.isInfiniteScrollDisabled = false;
-                this.productCategory = [];
-                localStorage.removeItem('productCategory');
-                this.getProductCategory();
-            }
-        });
+        if(this.dataRefreshing && type == 'Edit'){
+            this.openSnackBar("Can't edit while refreshing", 'Close', 3000, 'center', 'bottom');
+        }
+        else{
+            const dialogRef = this.dialog.open(AddProductCategoryDialog, {
+                disableClose: true, 
+                autoFocus: false,
+                data: {
+                    type: type,
+                    id: id,
+                    product_category: product_category,
+                    description: description
+                }
+            });
+        
+            dialogRef.afterClosed().subscribe(result => {
+                if(result != 0){
+                    this.offset = 0;
+                    this.infiniteScrollLoading = false;
+                    this.isInfiniteScrollDisabled = false;
+                    this.productCategory = [];
+                    this.getProductCategory();
+                }
+            });
+        }
     }
 
     deleteProductCategory(id, index){
-        const dialogRef = this.dialog.open(DeleteDialog, {
-            disableClose: true, 
-            autoFocus: false
-        });
-    
-        dialogRef.afterClosed().subscribe(result => {
-            if(result == 1){
-                this.loading = true;
-                this.falconService.deleteProductCategory(id)
-                .subscribe((result) => {
-                    if(result == 'Products are linked'){
-                        this.openSnackBar('Products are linked', 'Close', 3000, 'center', 'bottom');
+        if(this.dataRefreshing){
+            this.openSnackBar("Can't delete while refreshing", 'Close', 3000, 'center', 'bottom');
+        }
+        else{
+            const dialogRef = this.dialog.open(DeleteDialog, {
+                disableClose: true, 
+                autoFocus: false
+            });
+        
+            dialogRef.afterClosed().subscribe(result => {
+                if(result == 1){
+                    this.loading = true;
+                    this.falconService.deleteProductCategory(id)
+                    .subscribe((result) => {
+                        if(result == 'Products are linked'){
+                            this.openSnackBar('Products are linked', 'Close', 3000, 'center', 'bottom');
+                            this.loading = false;
+                        }
+                        else{
+                            this.openSnackBar('Product Category Deleted', 'Close', 3000, 'center', 'bottom');
+                            this.loading = false;
+                            this.productCategory.splice(index, 1);
+                            localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
+                        }
+                    },
+                    (error) => {
+                        this.openSnackBar('Failed to Delete', 'Close', 3000, 'center', 'bottom');
                         this.loading = false;
-                    }
-                    else{
-                        this.openSnackBar('Product Category Deleted', 'Close', 3000, 'center', 'bottom');
-                        this.loading = false;
-                        this.productCategory.splice(index, 1);
-                        localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
-                    }
-                },
-                (error) => {
-                    this.openSnackBar('Failed to Delete', 'Close', 3000, 'center', 'bottom');
-                    this.loading = false;
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     }
 
     resetFilters(){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.search = '';
@@ -194,13 +218,16 @@ export class ProductCategoryComponent implements OnInit {
             this.totalRows = null;
             this.getProductCategory();
         }
-        else{
+        else if(this.dataLoading){
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
+        }
+        else if(this.dataRefreshing){
+            this.openSnackBar("Can't reset while refreshing", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onSearch(search){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.search = search;
@@ -208,13 +235,16 @@ export class ProductCategoryComponent implements OnInit {
             this.totalRows = null;
             this.getProductCategory();
         }
-        else{
+        else if(this.dataLoading){
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
+        }
+        else if(this.dataRefreshing){
+            this.openSnackBar("Can't search while refreshing", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.offset = null;
@@ -233,8 +263,11 @@ export class ProductCategoryComponent implements OnInit {
             this.orderBy = columnName;
             this.getProductCategory();
         }
-        else{
+        else if(this.dataLoading){
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
+        }
+        else if(this.dataRefreshing){
+            this.openSnackBar("Can't sort while refreshing", 'Close', 3000, 'center', 'bottom');
         }
     }
 
