@@ -187,14 +187,16 @@ export class ProductCategoryComponent implements OnInit {
                     this.loading = true;
                     this.falconService.deleteProductCategory(id)
                     .subscribe((result) => {
-                        if(result == 'Products are linked'){
-                            this.openSnackBar('Products are linked', 'Close', 3000, 'center', 'bottom');
+                        if(result == 'Product Category is linked'){
+                            this.openSnackBar('Product Category is linked', 'Close', 3000, 'center', 'bottom');
                             this.loading = false;
                         }
                         else{
                             this.openSnackBar('Product Category Deleted', 'Close', 3000, 'center', 'bottom');
                             this.loading = false;
                             this.productCategory.splice(index, 1);
+                            this.offset--;
+                            this.totalRows--;
                             localStorage.setItem('productCategory', JSON.stringify(this.productCategory));
                         }
                     },

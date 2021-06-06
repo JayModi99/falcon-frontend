@@ -67,6 +67,11 @@ export class FalconService {
         return this.http.get(this.url + 'product/getAll/' + userId);
     }
 
+    getAllProductByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'product/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
     getProductByCategoryId(id){
         return this.http.get(this.url + 'product/getProductByCategoryId/' + id);
     }
@@ -86,6 +91,11 @@ export class FalconService {
     getClient(){
         var userId = localStorage.getItem('userId');
         return this.http.get(this.url + 'client/getAll/' + userId);
+    }
+
+    getAllClientByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'client/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
     }
 
     getClientById(id){
@@ -109,6 +119,11 @@ export class FalconService {
         return this.http.get(this.url + 'area/getAll/' + userId);
     }
 
+    getAllAreaByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'area/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
+    }
+
     addArea(data){
         return this.http.post(this.url + 'area/save', data);
     }
@@ -124,6 +139,11 @@ export class FalconService {
     getEngineer(){
         var userId = localStorage.getItem('userId');
         return this.http.get(this.url + 'engineer/getAll/' + userId);
+    }
+
+    getAllEngineerByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'engineer/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
     }
 
     addEngineer(data){
@@ -149,6 +169,11 @@ export class FalconService {
     getProblem(){
         var userId = localStorage.getItem('userId');
         return this.http.get(this.url + 'problem/getAll/' + userId);
+    }
+
+    getAllProblemByFilters(search, orderBy, order, offset){
+        var userId = localStorage.getItem('userId');
+        return this.http.get(this.url + 'problem/getAllByFilters/' + userId + '/' + search + '/' + orderBy + '/' + order + '/' + offset);
     }
 
     addProblem(data){

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FalconService } from 'app/service/falcon.service';
@@ -26,7 +26,15 @@ export class ProblemComponent implements OnInit {
     dataLoading: boolean = true;
     loading: boolean = false;
     failed: boolean = false;
-    problem: any;
+    
+    problem: any = [];
+    search = '';
+    orderBy = 'id';
+    order = 'asc';
+    offset = 0;
+    totalRows: number;
+    infiniteScrollLoading: boolean = false;
+    isInfiniteScrollDisabled: boolean = false;
 
     constructor(
         private titleService: Title,
@@ -44,15 +52,34 @@ export class ProblemComponent implements OnInit {
     getProblem(){
         this.dataLoading = true;
         this.failed = false;
-        this.falconService.getProblem()
-        .subscribe((result) => {
-            this.problem = result;
+        var s;
+        if(this.search == ''){
+            s = 'null';
+        }
+        else{
+            s = this.search;
+        }
+        this.falconService.getAllProblemByFilters(s, this.orderBy, this.order, this.offset)
+        .subscribe((result: any) => {
+            result.data.forEach(element => {
+                this.problem.push(element);
+            });
+            this.totalRows = result.totalRows;
+            this.offset += result.data.length;
+            this.isInfiniteScrollDisabled = false;
+            if(this.offset >= result.totalRows){
+                this.isInfiniteScrollDisabled = true;
+            }
+            this.infiniteScrollLoading = false;
             this.dataLoading = false;
+            this.snackBar.dismiss();
         },
         (error) => {
-            this.openSnackBar('Failed to load');
+            this.snackBar.dismiss();
+            this.openSnackBar('Failed to load', 'Close', 3000, 'center', 'bottom');
             this.dataLoading = false;
             this.failed = true;
+            this.infiniteScrollLoading = false;
         });
     }
 
@@ -70,7 +97,10 @@ export class ProblemComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe(result => {
             if(result != 0){
-                this.problem.length = 0;
+                this.offset = 0;
+                this.infiniteScrollLoading = false;
+                this.isInfiniteScrollDisabled = false;
+                this.problem = [];
                 this.getProblem();
             }
         });
@@ -87,21 +117,94 @@ export class ProblemComponent implements OnInit {
                 this.loading = true;
                 this.falconService.deleteProblem(id)
                 .subscribe((result: any) => {
-                    this.openSnackBar('Problem Deleted');
-                    this.problem.splice(index, 1);
-                    this.loading = false;
+                    if(result == 'Problem is linked'){
+                        this.loading = false;
+                        this.openSnackBar('Failed to Delete! Problem is linked', 'Close', 3000, 'center', 'bottom');
+                    }
+                    else{
+                        this.openSnackBar('Problem Deleted', 'Close', 3000, 'center', 'bottom');
+                        this.problem.splice(index, 1);
+                        this.offset--;
+                        this.totalRows--;
+                        this.loading = false;
+                    }
                 },
                 (error) => {
-                    this.openSnackBar('Failed to Delete');
+                    this.openSnackBar('Failed to Delete', 'Close', 3000, 'center', 'bottom');
                     this.loading = false;
                 });
             }
         });
     }
 
-    openSnackBar(message: string) {
-        this.snackBar.open(message, 'Close', {
-          duration: 3000,
+    resetFilters(){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.problem = [];
+            this.search = '';
+            this.orderBy = 'id';
+            this.order = 'asc';
+            this.offset = null;
+            this.totalRows = null;
+            this.getProblem();
+        }
+        else if(this.dataLoading){
+            this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onSearch(search){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.problem = [];
+            this.search = search;
+            this.offset = null;
+            this.totalRows = null;
+            this.getProblem();
+        }
+        else if(this.dataLoading){
+            this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onColumnSort(columnName){
+        if(!this.dataLoading){
+            this.dataLoading = true;
+            this.problem = [];
+            this.offset = null;
+            this.totalRows = null;
+            if(this.orderBy == columnName){
+                if(this.order == 'asc'){
+                    this.order = 'desc';
+                }
+                else{
+                    this.order = 'asc';
+                }
+            }
+            else{
+                this.order = 'asc';
+            }
+            this.orderBy = columnName;
+            this.getProblem();
+        }
+        else if(this.dataLoading){
+            this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
+        }
+    }
+
+    onScroll(){
+        if(this.isInfiniteScrollDisabled == false){
+            this.isInfiniteScrollDisabled = true;
+            this.infiniteScrollLoading = true;
+            this.getProblem();
+        }
+    }
+
+    openSnackBar(message, close, duration, horizontalPosition: MatSnackBarHorizontalPosition, verticalPosition: MatSnackBarVerticalPosition) {
+        this.snackBar.open(message, close, {
+            duration: duration,
+            horizontalPosition: horizontalPosition,
+            verticalPosition: verticalPosition,
         });
     }
 

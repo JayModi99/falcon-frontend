@@ -14,6 +14,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
 import { FuseWidgetModule } from '@fuse/components';
 import { FuseSharedModule } from '@fuse/shared.module';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ComplaintModule } from '../complaint/complaint.module';
 
 @NgModule({
   imports: [
@@ -31,9 +33,11 @@ import { FuseSharedModule } from '@fuse/shared.module';
         MatDividerModule,
         MatDialogModule,
         MatProgressSpinnerModule,
+        InfiniteScrollModule,
 
         FuseSharedModule,
-        FuseWidgetModule
+        FuseWidgetModule,
+        ComplaintModule
   ],
   declarations: [
       EngineerComponent,
