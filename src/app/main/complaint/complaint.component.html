@@ -379,7 +379,7 @@
                                             <app-loading style="justify-content: center; display: flex;" [text]="'Loading More Items'"></app-loading>
                                         </td>
                                     </tr>
-                                    <tr *ngIf="tickets != '' && allTicketsOffset < unassignedTicketsTotalRows && !unassignedTicketsInfiniteScrollLoading && !unassignedTicketsLoading && !unassignedTicketsFailed">
+                                    <tr *ngIf="tickets != '' && allTicketsOffset < allTicketsTotalRows && !allTicketsInfiniteScrollLoading && !allTicketsLoading && !allTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">
                                             Scroll to load more data
                                         </td>
