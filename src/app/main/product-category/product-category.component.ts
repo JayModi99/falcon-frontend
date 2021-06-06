@@ -54,6 +54,11 @@ export class ProductCategoryComponent implements OnInit {
         this.getProductCategory();
     }
 
+    refresh(){
+        this.dataLoading = true;
+        this.getProductCategory();
+    }
+
     // For showing localstorage data while data
     // @HostListener('window:storage', ['$event'])
     // onStorageChange(event) {
@@ -76,7 +81,6 @@ export class ProductCategoryComponent implements OnInit {
         //     this.dataRefreshing = true;
         //     this.openSnackBar('Refreshing...', '', 0, 'right', 'bottom');
         // }
-        this.dataLoading = true;
         this.failed = false;
         var s;
         if(this.search == ''){
@@ -210,7 +214,7 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     resetFilters(){
-        if(!this.dataLoading && !this.dataRefreshing){
+        if(!this.dataLoading && !this.infiniteScrollLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.search = '';
@@ -220,7 +224,7 @@ export class ProductCategoryComponent implements OnInit {
             this.totalRows = null;
             this.getProductCategory();
         }
-        else if(this.dataLoading){
+        else if(this.dataLoading || this.infiniteScrollLoading){
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
         }
         else if(this.dataRefreshing){
@@ -229,7 +233,7 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     onSearch(search){
-        if(!this.dataLoading && !this.dataRefreshing){
+        if(!this.dataLoading && !this.infiniteScrollLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.search = search;
@@ -237,7 +241,7 @@ export class ProductCategoryComponent implements OnInit {
             this.totalRows = null;
             this.getProductCategory();
         }
-        else if(this.dataLoading){
+        else if(this.dataLoading || this.infiniteScrollLoading){
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
         }
         else if(this.dataRefreshing){
@@ -246,7 +250,7 @@ export class ProductCategoryComponent implements OnInit {
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading && !this.dataRefreshing){
+        if(!this.dataLoading && !this.infiniteScrollLoading && !this.dataRefreshing){
             this.dataLoading = true;
             this.productCategory = [];
             this.offset = null;
@@ -265,7 +269,7 @@ export class ProductCategoryComponent implements OnInit {
             this.orderBy = columnName;
             this.getProductCategory();
         }
-        else if(this.dataLoading){
+        else if(this.dataLoading || this.infiniteScrollLoading){
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
         }
         else if(this.dataRefreshing){

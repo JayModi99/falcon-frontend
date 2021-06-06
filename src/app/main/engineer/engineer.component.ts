@@ -48,10 +48,14 @@ export class EngineerComponent implements OnInit {
 
     ngOnInit(){
         this.getEngineer();
-     }
+    }
+
+    refresh(){
+        this.dataLoading = true;
+        this.getEngineer();
+    }
 
      getEngineer(){
-        this.dataLoading = true;
         this.failed = false;
         var s;
         if(this.search == ''){
@@ -138,7 +142,7 @@ export class EngineerComponent implements OnInit {
     }
 
     resetFilters(){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.engineer = [];
             this.search = '';
@@ -148,13 +152,13 @@ export class EngineerComponent implements OnInit {
             this.totalRows = null;
             this.getEngineer();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onSearch(search){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.engineer = [];
             this.search = search;
@@ -162,13 +166,13 @@ export class EngineerComponent implements OnInit {
             this.totalRows = null;
             this.getEngineer();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.engineer = [];
             this.offset = null;
@@ -187,7 +191,7 @@ export class EngineerComponent implements OnInit {
             this.orderBy = columnName;
             this.getEngineer();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
         }
     }

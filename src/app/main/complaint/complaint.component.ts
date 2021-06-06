@@ -218,6 +218,11 @@ export class ComplaintComponent implements OnInit {
     }
 
     //All tickets methods
+    refreshUnassignedTickets(){
+        this.unassignedTicketsLoading = true;
+        this.getUnassignedTickets();
+    }
+
     getUnassignedTickets(){
         var s;
         if(this.unassignedTicketsSearch == ''){
@@ -243,7 +248,7 @@ export class ComplaintComponent implements OnInit {
             this.unassignedTicketsInfiniteScrollLoading = false;
         },
         (error) => {
-            this.openSnackBar('Failed to load All Tickets');
+            this.openSnackBar('Failed to load Unassigned Tickets');
             this.unassignedTicketsLoading = false;
             this.unassignedTicketsFailed = true;
             this.unassignedTicketsInfiniteScrollLoading = false;
@@ -251,7 +256,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     unassignedTicketResetFilters(){
-        if(!this.unassignedTicketsLoading){
+        if(!this.unassignedTicketsLoading && !this.unassignedTicketsInfiniteScrollLoading){
             this.unassignedTicketsLoading = true;
             this.unassignedTickets.length = 0;
             this.unassignedTicketsSearch = '';
@@ -267,7 +272,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     unassignedTicketOnSearch(search){
-        if(!this.unassignedTicketsLoading){
+        if(!this.unassignedTicketsLoading && !this.unassignedTicketsInfiniteScrollLoading){
             this.unassignedTicketsLoading = true;
             this.unassignedTickets.length = 0;
             this.unassignedTicketsSearch = search;
@@ -281,7 +286,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     unassignedTicketOnColumnSort(columnName){
-        if(!this.unassignedTicketsLoading){
+        if(!this.unassignedTicketsLoading && !this.unassignedTicketsInfiniteScrollLoading){
             this.unassignedTicketsLoading = true;
             this.unassignedTickets.length = 0;
             this.unassignedTicketsOffset = null;
@@ -314,6 +319,11 @@ export class ComplaintComponent implements OnInit {
     }
 
     //Assigned tickets methods
+    refreshAssignedTickets(){
+        this.assignedTicketsLoading = true;
+        this.getAssignedTickets();
+    }
+
     getAssignedTickets(){
         var s;
         if(this.assignedTicketsSearch == ''){
@@ -339,7 +349,7 @@ export class ComplaintComponent implements OnInit {
             this.assignedTicketsInfiniteScrollLoading = false;
         },
         (error) => {
-            this.openSnackBar('Failed to load All Tickets');
+            this.openSnackBar('Failed to load Assigned Tickets');
             this.assignedTicketsLoading = false;
             this.assignedTicketsFailed = true;
             this.assignedTicketsInfiniteScrollLoading = false;
@@ -347,7 +357,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     assignedTicketResetFilters(){
-        if(!this.assignedTicketsLoading){
+        if(!this.assignedTicketsLoading && !this.assignedTicketsInfiniteScrollLoading){
             this.assignedTicketsLoading = true;
             this.assignedTickets.length = 0;
             this.assignedTicketsSearch = '';
@@ -363,7 +373,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     assignedTicketOnSearch(search){
-        if(!this.assignedTicketsLoading){
+        if(!this.assignedTicketsLoading && !this.assignedTicketsInfiniteScrollLoading){
             this.assignedTicketsLoading = true;
             this.assignedTickets.length = 0;
             this.assignedTicketsSearch = search;
@@ -377,7 +387,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     assignedTicketOnColumnSort(columnName){
-        if(!this.assignedTicketsLoading){
+        if(!this.assignedTicketsLoading && !this.assignedTicketsInfiniteScrollLoading){
             this.assignedTicketsLoading = true;
             this.assignedTickets.length = 0;
             this.assignedTicketsOffset = null;
@@ -410,6 +420,11 @@ export class ComplaintComponent implements OnInit {
     }
 
     //Completed tickets methods
+    refreshCompletedTickets(){
+        this.completedTicketsLoading = true;
+        this.getCompletedTickets();
+    }
+
     getCompletedTickets(){
         var s;
         if(this.completedTicketsSearch == ''){
@@ -435,7 +450,7 @@ export class ComplaintComponent implements OnInit {
             this.completedTicketsInfiniteScrollLoading = false;
         },
         (error) => {
-            this.openSnackBar('Failed to load All Tickets');
+            this.openSnackBar('Failed to load Completed Tickets');
             this.completedTicketsLoading = false;
             this.completedTicketsFailed = true;
             this.completedTicketsInfiniteScrollLoading = false;
@@ -443,7 +458,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     completedTicketResetFilters(){
-        if(!this.completedTicketsLoading){
+        if(!this.completedTicketsLoading && !this.completedTicketsInfiniteScrollLoading){
             this.completedTicketsLoading = true;
             this.completedTickets.length = 0;
             this.completedTicketsSearch = '';
@@ -459,7 +474,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     completedTicketOnSearch(search){
-        if(!this.completedTicketsLoading){
+        if(!this.completedTicketsLoading && !this.completedTicketsInfiniteScrollLoading){
             this.completedTicketsLoading = true;
             this.completedTickets.length = 0;
             this.completedTicketsSearch = search;
@@ -473,7 +488,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     completedTicketOnColumnSort(columnName){
-        if(!this.completedTicketsLoading){
+        if(!this.completedTicketsLoading && !this.completedTicketsInfiniteScrollLoading){
             this.completedTicketsLoading = true;
             this.completedTickets.length = 0;
             this.completedTicketsOffset = null;
@@ -506,6 +521,11 @@ export class ComplaintComponent implements OnInit {
     }
 
     //All tickets methods
+    refreshAllTickets(){
+        this.allTicketsLoading = true;
+        this.getAllTickets();
+    }
+    
     getAllTickets(){
         var s;
         if(this.allTicketsSearch == ''){
@@ -539,7 +559,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     allTicketResetFilters(){
-        if(!this.allTicketsLoading){
+        if(!this.allTicketsLoading && !this.allTicketsInfiniteScrollLoading){
             this.allTicketsLoading = true;
             this.allTickets.length = 0;
             this.allTicketsSearch = '';
@@ -555,7 +575,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     allTicketOnSearch(search){
-        if(!this.allTicketsLoading){
+        if(!this.allTicketsLoading && !this.allTicketsInfiniteScrollLoading){
             this.allTicketsLoading = true;
             this.allTickets.length = 0;
             this.allTicketsSearch = search;
@@ -569,7 +589,7 @@ export class ComplaintComponent implements OnInit {
     }
 
     allTicketOnColumnSort(columnName){
-        if(!this.allTicketsLoading){
+        if(!this.allTicketsLoading && !this.allTicketsInfiniteScrollLoading){
             this.allTicketsLoading = true;
             this.allTickets.length = 0;
             this.allTicketsOffset = null;

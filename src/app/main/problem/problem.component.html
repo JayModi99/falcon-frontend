@@ -73,7 +73,7 @@
                         <td colspan="6" style="text-align: center; padding: 15px 0px;"><app-loading style="justify-content: center; display: flex;" [text]="'Loading'"></app-loading></td>
                     </tr>
                     <tr *ngIf="failed">
-                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                        <td colspan="5" style="text-align: center; padding: 15px 0px;">Failed to load<a mat-icon-button (click)="refresh()" mat-button><mat-icon color="accent">refresh</mat-icon></a></td>
                     </tr>
                     <tr *ngIf="problem == '' && !dataLoading && !failed">
                         <td colspan="5" style="text-align: center; padding: 15px 0px;">No records found</td>

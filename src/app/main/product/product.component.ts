@@ -49,10 +49,14 @@ export class ProductComponent implements OnInit {
 
     ngOnInit(){
         this.getProduct();
-     }
+    }
+
+    refresh(){
+        this.dataLoading = true;
+        this.getProduct();
+    }
 
     getProduct(){
-        this.dataLoading = true;
         this.failed = false;
         var s;
         if(this.search == ''){
@@ -141,7 +145,7 @@ export class ProductComponent implements OnInit {
     }
 
     resetFilters(){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.products = [];
             this.search = '';
@@ -151,13 +155,13 @@ export class ProductComponent implements OnInit {
             this.totalRows = null;
             this.getProduct();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onSearch(search){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.products = [];
             this.search = search;
@@ -165,13 +169,13 @@ export class ProductComponent implements OnInit {
             this.totalRows = null;
             this.getProduct();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.products = [];
             this.offset = null;
@@ -190,7 +194,7 @@ export class ProductComponent implements OnInit {
             this.orderBy = columnName;
             this.getProduct();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
         }
     }

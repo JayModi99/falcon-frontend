@@ -48,8 +48,12 @@ export class AreasComponent implements OnInit {
         this.getArea();
      }
 
-    getArea(){
+     refresh(){
         this.dataLoading = true;
+         this.getArea();
+     }
+
+    getArea(){
         this.failed = false;
         var s;
         if(this.search == ''){
@@ -136,7 +140,7 @@ export class AreasComponent implements OnInit {
     }
 
     resetFilters(){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.areas = [];
             this.search = '';
@@ -146,13 +150,13 @@ export class AreasComponent implements OnInit {
             this.totalRows = null;
             this.getArea();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onSearch(search){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.areas = [];
             this.search = search;
@@ -160,13 +164,13 @@ export class AreasComponent implements OnInit {
             this.totalRows = null;
             this.getArea();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.areas = [];
             this.offset = null;
@@ -185,7 +189,7 @@ export class AreasComponent implements OnInit {
             this.orderBy = columnName;
             this.getArea();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
         }
     }

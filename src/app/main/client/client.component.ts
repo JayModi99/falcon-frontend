@@ -49,8 +49,12 @@ export class ClientComponent implements OnInit {
         this.getClients();
      }
 
-    getClients(){
+     refresh(){
         this.dataLoading = true;
+        this.getClients();
+     }
+
+    getClients(){
         this.failed = false;
         var s;
         if(this.search == ''){
@@ -137,7 +141,7 @@ export class ClientComponent implements OnInit {
     }
 
     resetFilters(){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.clients = [];
             this.search = '';
@@ -147,13 +151,13 @@ export class ClientComponent implements OnInit {
             this.totalRows = null;
             this.getClients();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't reset while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onSearch(search){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.clients = [];
             this.search = search;
@@ -161,13 +165,13 @@ export class ClientComponent implements OnInit {
             this.totalRows = null;
             this.getClients();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't search while loading", 'Close', 3000, 'center', 'bottom');
         }
     }
 
     onColumnSort(columnName){
-        if(!this.dataLoading){
+        if(!this.dataLoading && !this.infiniteScrollLoading){
             this.dataLoading = true;
             this.clients = [];
             this.offset = null;
@@ -186,7 +190,7 @@ export class ClientComponent implements OnInit {
             this.orderBy = columnName;
             this.getClients();
         }
-        else if(this.dataLoading){
+        else{
             this.openSnackBar("Can't sort while loading", 'Close', 3000, 'center', 'bottom');
         }
     }

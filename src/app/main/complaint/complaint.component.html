@@ -102,7 +102,7 @@
                                         </td>
                                     </tr>
                                     <tr *ngIf="unassignedTicketsFailed">
-                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load<a mat-icon-button (click)="refreshUnassignedTickets()" mat-button><mat-icon color="accent">refresh</mat-icon></a></td>
                                     </tr>
                                     <tr *ngIf="tickets == '' && !unassignedTicketsLoading && !unassignedTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
@@ -189,7 +189,7 @@
                                         </td>
                                     </tr>
                                     <tr *ngIf="assignedTicketsFailed">
-                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load<a mat-icon-button (click)="refreshAssignedTickets()" mat-button><mat-icon color="accent">refresh</mat-icon></a></td>
                                     </tr>
                                     <tr *ngIf="tickets == '' && !assignedTicketsLoading && !assignedTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
@@ -271,7 +271,7 @@
                                         </td>
                                     </tr>
                                     <tr *ngIf="completedTicketsFailed">
-                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load<a mat-icon-button (click)="refreshCompleteTickets()" mat-button><mat-icon color="accent">refresh</mat-icon></a></td>
                                     </tr>
                                     <tr *ngIf="tickets == '' && !completedTicketsLoading && !completedTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
@@ -350,7 +350,7 @@
                                         </td>
                                     </tr>
                                     <tr *ngIf="allTicketsFailed">
-                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load</td>
+                                        <td colspan="8" style="text-align: center; padding: 15px 0px;">Failed to load<a mat-icon-button (click)="refreshAllTickets()" mat-button><mat-icon color="accent">refresh</mat-icon></a></td>
                                     </tr>
                                     <tr *ngIf="tickets == '' && !allTicketsLoading && !allTicketsFailed">
                                         <td colspan="8" style="text-align: center; padding: 15px 0px;">No records found</td>
